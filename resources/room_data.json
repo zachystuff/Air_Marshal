@@ -23,7 +23,8 @@
         "lawyer"
       ],
       "items": [
-        "ski pole"
+        "ski pole",
+        "check book"
       ],
       "directions": {
         "forward": "cockpit",
@@ -36,7 +37,7 @@
         "first officer"
       ],
       "items": [
-        "aviation manual",
+        "flight manual",
         "aircraft guide"
       ],
       "directions": {
