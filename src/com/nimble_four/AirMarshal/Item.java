@@ -30,6 +30,12 @@ class enum Item {
     }
 
     // ---- HELPERS ----
+
+
+    public string getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         return getName();
