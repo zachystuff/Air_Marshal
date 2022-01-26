@@ -12,8 +12,8 @@
         "carton of cigarettes"
       ],
       "directions": {
-        "north": "first class",
-        "west": "bathroom",
+        "forward": "first class",
+        "backwards": "bathroom",
         "down": "galley"
       }
     },
@@ -26,8 +26,8 @@
         "ski pole"
       ],
       "directions": {
-        "north": "cockpit",
-        "south": "commercial class"
+        "forward": "cockpit",
+        "backwards": "commercial class"
       }
     },
     "cockpit": {
@@ -40,7 +40,7 @@
         "aircraft guide"
       ],
       "directions": {
-        "south": "first class"
+        "backwards": "first class"
       }
     },
     "bathroom": {
@@ -49,7 +49,7 @@
         "poster"
       ],
       "directions": {
-        "east": "commercial class"
+        "forward": "commercial class"
       }
     },
     "galley": {
@@ -61,7 +61,7 @@
       ],
       "directions": {
         "up": "commercial class",
-        "north": "cargo"
+        "forward": "cargo"
       }
     },
     "cargo": {
@@ -72,7 +72,7 @@
         "anonymous characters bag"
       ],
       "directions": {
-        "south": "galley"
+        "backwards": "galley"
       }
     }
   }
