@@ -95,10 +95,10 @@ class Room {
 
     @Override
     public String toString() {
-        return "Room{" +
+        return getClass().getSimpleName() +"{" +
                 "name='" + getName() + '\'' +
                 ", items=" + getItems() + '\'' +
-                ", characters=" + getCharacters() +
+                ", characters=" + getCharacters().toString() +
                 '}';
     }
 }
