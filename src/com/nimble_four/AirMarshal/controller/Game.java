@@ -22,7 +22,6 @@ public class Game {
             e.printStackTrace();
         }
 
-        System.out.println("Play");
         String test = prompter.prompt("Please enter yes if you see this? ", "yes", "Invalid choice: enter yes");
 
         if (test.equals("yes")) {
