@@ -1,0 +1,80 @@
+{
+  "rooms": {
+    "commercial class": {
+      "characters": [
+        "teacher",
+        "doctor"
+      ],
+      "items": [
+        "yellow handkerchief",
+        "overhead luggage",
+        "stethoscope",
+        "carton of cigarettes"
+      ],
+      "directions": {
+        "forward": "first class",
+        "backwards": "bathroom",
+        "down": "galley"
+      }
+    },
+    "first class": {
+      "characters": [
+        "stewardess",
+        "lawyer"
+      ],
+      "items": [
+        "ski pole",
+        "check book"
+      ],
+      "directions": {
+        "forward": "cockpit",
+        "backwards": "commercial class"
+      }
+    },
+    "cockpit": {
+      "characters": [
+        "pilot",
+        "first officer"
+      ],
+      "items": [
+        "flight manual",
+        "aircraft guide"
+      ],
+      "directions": {
+        "backwards": "first class"
+      }
+    },
+    "bathroom": {
+      "characters": [],
+      "items": [
+        "poster"
+      ],
+      "directions": {
+        "forward": "commercial class"
+      }
+    },
+    "galley": {
+      "characters": ["cook"],
+      "items": [
+        "drinks",
+        "food",
+        "spatula"
+      ],
+      "directions": {
+        "up": "commercial class",
+        "forward": "cargo"
+      }
+    },
+    "cargo": {
+      "characters": [],
+      "items": [
+        "lawyers bag",
+        "doctors bag",
+        "anonymous characters bag"
+      ],
+      "directions": {
+        "backwards": "galley"
+      }
+    }
+  }
+}
