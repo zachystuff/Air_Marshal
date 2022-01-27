@@ -1,10 +1,9 @@
 {
-  "teacher": "Teacher's dialogue here",
-"doctor": "Doctors dialogue here",
-  "lawyer": "lawyer's dialogue here",
-  "stewardess": "stewardess dialogue here",
-  "cook": "cook's dialogue here",
-  "pilot": "pilot dialogue here",
-  "first captain": "first captain dialogue here",
-  "cook": "cook text here"
+  "teacher": "TEACHER: The doctor was asking strange questions earlier...",
+"doctor": "DOCTOR: I'm a doctor. ",
+  "lawyer": "LAWYER: I plead the 5th",
+  "stewardess": "STEWARDESS: Tours of the cockpit are given upon special request",
+  "cook": "COOK: I'd do anything for a good whiskey",
+  "pilot": "PILOT: My first captain knows all about the aircraft",
+  "first captain": "FIRST CAPTAIN: Our aircraft guide shows all the nooks and crannies of this model aircraft"
 }
