@@ -1,0 +1,35 @@
+   █████████    ███               ██████   ██████                             █████                ████
+  ███░░░░░███  ░░░               ░░██████ ██████                             ░░███                ░░███
+ ░███    ░███  ████  ████████     ░███░█████░███   ██████   ████████   █████  ░███████    ██████   ░███
+ ░███████████ ░░███ ░░███░░███    ░███░░███ ░███  ░░░░░███ ░░███░░███ ███░░   ░███░░███  ░░░░░███  ░███
+ ░███░░░░░███  ░███  ░███ ░░░     ░███ ░░░  ░███   ███████  ░███ ░░░ ░░█████  ░███ ░███   ███████  ░███
+ ░███    ░███  ░███  ░███         ░███      ░███  ███░░███  ░███      ░░░░███ ░███ ░███  ███░░███  ░███
+ █████   █████ █████ █████        █████     █████░░████████ █████     ██████  ████ █████░░████████ █████
+░░░░░   ░░░░░ ░░░░░ ░░░░░        ░░░░░     ░░░░░  ░░░░░░░░ ░░░░░     ░░░░░░  ░░░░ ░░░░░  ░░░░░░░░ ░░░░░
+
+
+Welcome to Air Marshal The Game!
+
+You awake from a daze with the taste of whiskey in your breath. Looking around you notice you are on board a plane.
+As you stare around you start looking in your pockets, in them you find a badge that reads 'Air Marshal' and a phone.
+
+               .------,
+              =\      \                              ,   /\   ,                               ╭━━━━━━━━━╮
+ .---.         =\      \                            / '-'  '-' \                              ┃━●━══━━━━┃
+ | C~ \         =\      \                         /  AIR MARSHAL \                            ┃█████████┃
+ |     `----------'------'----------,             \              /                            ┃█████████┃
+.'     LI.-.LI LI LI LI LI LI LI.-.LI`-.           \    .--.    /                             ┃█████████┃
+\ _/.____|_|______.------,______|_|_____)           |  ( 23 )  |                              ┃█████████┃
+                 /      /                           \   '--'   /                              ┃█████████┃
+               =/      /                             '--.  .--'                               ┃█████████┃
+              =/      /                                  \/                                   ╰━━━━━━━━━╯
+             =/      /
+             /_____,'
+
+Upon further inspection of the phone you notice there is an unread message. You read the message and it  says:
+    "We have received intel that a crime will be committed before the flight lands.
+     It is up to you to stop this form happening.
+     To stop this from happening you have to gather information from the passengers and look for evidence
+     that will help you to uncover who is the criminal. "
+
+In your foggy mind you remember you are an Air Marshal and it is your duty to protect the passengers of the flight.
