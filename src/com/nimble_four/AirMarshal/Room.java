@@ -3,23 +3,22 @@ package com.nimble_four.AirMarshal;
 import java.util.ArrayList;
 import java.util.List;
 
-class Room {
+public class Room {
     private String name;
     private Player player;
     private String playerOptions; // NOT YET SURE WHAT THIS IS FOR
-    private Items items;    // So far each room has one item
+    private Item items;    // So far each room has one item
     private List<Character> characters = new ArrayList<>(); // List of Characters present in the room
 
     // Neighboring Rooms
-    private String foward;
+    private String forward;
     private String backwards;
     private String down;
     private String up;
 
-    public Room(String name, Player player, Items items) {
+    public Room(String name) {
         this.name = name;
-        this.player = player;
-        this.items = items;
+        //this.items = items;
     }
 
 
@@ -41,7 +40,7 @@ class Room {
         return playerOptions;
     }
 
-    public Items getItems() {
+    public Item getItems() {
         return items;
     }
 
@@ -50,7 +49,7 @@ class Room {
     }
 
     public String getFoward() {
-        return foward;
+        return forward;
     }
 
     public String getBackwards() {
@@ -73,12 +72,12 @@ class Room {
         this.playerOptions = playerOptions;
     }
 
-    public void setItems(Items items) {
+    public void setItems(Item items) {
         this.items = items;
     }
 
     public void setFoward(String foward) {
-        this.foward = foward;
+        this.forward = foward;
     }
 
     public void setBackwards(String backwards) {

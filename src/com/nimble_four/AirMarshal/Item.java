@@ -1,6 +1,6 @@
 package com.nimble_four.AirMarshal;
 
-class enum Item {
+public enum Item {
     YELLOW_HANDKERCHIEF("yellow handkerchief"),
     OVERHEAD_LUGGAGE("overhead luggage"),
     STETHOSCOPE("stethoscope"),
@@ -17,12 +17,12 @@ class enum Item {
     DOCTORS_BAG("doctors bag"),
     ANONYMOUS_BAG("anonymous bag"),
     BOARDING_PASS("boarding pass"),
-    POISON('poison');
+    POISON("poison");
 
 
 
     // ---- FIELDS ----
-    private string name;
+    private String name;
 
     // ---- CONSTRUCTOR ----
     Item(String name){
@@ -32,7 +32,7 @@ class enum Item {
     // ---- HELPERS ----
 
 
-    public string getName() {
+    public String getName() {
         return name;
     }
 
