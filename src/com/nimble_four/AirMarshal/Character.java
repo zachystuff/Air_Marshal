@@ -4,13 +4,13 @@ class Character {
     public String name;
     public String dialog;
 
-    public Character(String name, string dialog) {
+    public Character(String name, String dialog) {
         this.name = name;
         this.dialog = dialog;
     }
 
     public String getItem() {
-        return "Collected Item!"
+        return "Collected Item!";
     }
 
     public String getName() {

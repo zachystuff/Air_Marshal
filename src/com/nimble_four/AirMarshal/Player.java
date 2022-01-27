@@ -1,4 +1,4 @@
 package com.nimble_four.AirMarshal;
 
-class Player {
+public class Player {
 }
