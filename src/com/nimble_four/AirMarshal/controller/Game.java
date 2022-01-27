@@ -1,6 +1,8 @@
 package com.nimble_four.AirMarshal.controller;
 
 import com.apps.util.Prompter;
+import com.nimble_four.AirMarshal.Item;
+import com.nimble_four.AirMarshal.Player;
 import com.nimble_four.AirMarshal.Room;
 
 import java.io.FileNotFoundException;
@@ -8,6 +10,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 //import org.json.*;
 import org.json.simple.parser.JSONParser;
@@ -16,7 +20,7 @@ import org.json.simple.JSONObject;
 
 
 public class Game {
-
+    private Player player = new Player();
     private Prompter prompter = new Prompter(new Scanner(System.in));
     private String activeRoom = "commercial class";
 
@@ -50,9 +54,9 @@ public class Game {
                 JSONObject room = (JSONObject) roomData;
                 JSONObject rooms = (JSONObject) room.get("rooms");
                 System.out.println("You are currently in the " + activeRoom);
-                String choice = prompter.prompt("What would you like to do? ", "move|talk", "Invalid choice: move get or interact");
+                String choice = prompter.prompt("What would you like to do? ", "move|talk|items", "Invalid choice: move get or interact");
+                JSONObject roomDirections = (JSONObject) rooms.get(activeRoom);
                 if(choice.equals("move")){
-                    JSONObject roomDirections = (JSONObject) rooms.get(activeRoom);
                     System.out.println(roomDirections.get("directions"));
                     String directionChoice = prompter.prompt("Which direction would you like to go?");
                     JSONObject directions = (JSONObject) roomDirections.get("directions");
@@ -60,12 +64,28 @@ public class Game {
                     System.out.println(rooms.get(activeRoom));
                 }
                 else if(choice.equals("talk")){
-                    JSONObject currentRoom = (JSONObject) rooms.get(activeRoom);
-                    System.out.println(currentRoom.get("characters"));
+                    System.out.println(roomDirections.get("characters"));
                     String characterChoice = prompter.prompt("Who would you like to talk to?");
                     JSONObject characterDialogue = (JSONObject) characterDialogueData;
                     System.out.println(characterDialogue.get(characterChoice));
                 }
+                else if(choice.equals("items")){
+                    System.out.println(roomDirections.get("items"));
+                    String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
+                    String item = itemSelected.replace(" ","_");
+
+                    if(player.getInventory().contains(Item.valueOf(item))){
+                        System.out.println("Item was already added to inventory, Try selecting a different item");
+                    } else {
+                        player.addToInventory(Item.valueOf(item));
+                        System.out.println("Item successfully added");
+                        System.out.println("You currently have: \r" + player.getInventory());
+                    }
+                }
+                // display list of items
+                // collect items
+                // task 306 & 268
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
