@@ -10,13 +10,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 //import org.json.*;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.*;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
 
 
 public class Game {
@@ -55,7 +58,7 @@ public class Game {
                 JSONObject room = (JSONObject) roomData;
                 JSONObject rooms = (JSONObject) room.get("rooms");
                 System.out.println("You are currently in the " + activeRoom);
-                String choice = prompter.prompt("What would you like to do? ", "move|talk|items", "Invalid choice: move get or interact");
+                String choice = prompter.prompt("What would you like to do? ", "move|talk|look", "Invalid choice: move get or interact");
                 JSONObject roomDirections = (JSONObject) rooms.get(activeRoom);
                 if(choice.equals("move")){
                     System.out.println(roomDirections.get("directions"));
@@ -70,22 +73,32 @@ public class Game {
                     JSONObject characterDialogue = (JSONObject) characterDialogueData;
                     System.out.println(characterDialogue.get(characterChoice));
                 }
-                else if(choice.equals("items")){
+                else if(choice.equals("look")){
                     System.out.println(roomDirections.get("items"));
-                    String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
-                    String item = itemSelected.replace(" ","_");
 
-                    if(player.getInventory().contains(Item.valueOf(item))){
-                        System.out.println("Item was already added to inventory, Try selecting a different item");
+                    // converts the JSON to a JSONARRAY
+                    JSONArray itemsArray = (JSONArray) roomDirections.get("items");
+
+                    String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
+                    String item = itemSelected.replace(" ","_"); // Takes care of substituting spaces for underscores
+
+                    // Checks if the item entered by user is valid ie is in that specific room
+                    boolean isValidItem = itemsArray.stream().anyMatch(it -> it.equals(itemSelected.toLowerCase()));
+
+                    if(isValidItem){
+                        // checks if item is already in our inventory
+                        if(player.getInventory().contains(Item.valueOf(item))){
+                            System.out.println("Item was already added to inventory, Try selecting a different item");
+                        } else {
+                            // before adding item to our inventory, it must be converted to an enum
+                            player.addToInventory(Item.valueOf(item));
+                            System.out.println("Item successfully added");
+                            System.out.println("You currently have: \r" + player.getInventory());
+                        }
                     } else {
-                        player.addToInventory(Item.valueOf(item));
-                        System.out.println("Item successfully added");
-                        System.out.println("You currently have: \r" + player.getInventory());
+                        System.out.println("You entered an Invalid item");
                     }
                 }
-                // display list of items
-                // collect items
-                // task 306 & 268
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
