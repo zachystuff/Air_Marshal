@@ -27,15 +27,16 @@ public class Game {
 
     public void startGame() {
         try {
-            Files.readAllLines(Path.of("data/game_intro")).forEach(System.out::println);
+            Files.readAllLines(Path.of("data/game_intro.txt")).forEach(System.out::println);
+            Files.readAllLines(Path.of("data/game_instructions.txt")).forEach(System.out::println);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        String test = prompter.prompt("Please enter yes if you see this? ", "yes", "Invalid choice: enter yes");
+        String test = prompter.prompt("Please enter yes if you want to play? ", "yes|y", "Invalid choice: enter yes");
 
-        if (test.equals("yes")) {
-            System.out.println("Successful");
+        if (test.equals("yes") || test.equals("y")) {
+            System.out.println("Enjoy the game");
             turnLoop();
         }
     }
