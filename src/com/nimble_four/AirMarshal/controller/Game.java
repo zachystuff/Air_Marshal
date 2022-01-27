@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
-import org.json.*;
+//import org.json.*;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.*;
 import org.json.simple.JSONObject;
@@ -46,18 +46,26 @@ public class Game {
         while(true){
             try{
                 Object roomData =new JSONParser().parse(new FileReader("resources/room_data.json"));
+                Object characterDialogueData =new JSONParser().parse(new FileReader("resources/character_dialogue.json"));
                 JSONObject room = (JSONObject) roomData;
                 JSONObject rooms = (JSONObject) room.get("rooms");
                 System.out.println("You are currently in the " + activeRoom);
-                String choice = prompter.prompt("What would you like to do? ", "move", "Invalid choice: move get or interact");
+                String choice = prompter.prompt("What would you like to do? ", "move|talk", "Invalid choice: move get or interact");
                 if(choice.equals("move")){
                     JSONObject roomDirections = (JSONObject) rooms.get(activeRoom);
                     System.out.println(roomDirections.get("directions"));
                     String directionChoice = prompter.prompt("Which direction would you like to go?");
                     JSONObject directions = (JSONObject) roomDirections.get("directions");
                     activeRoom = (String) directions.get(directionChoice);
+                    System.out.println(rooms.get(activeRoom));
                 }
-                System.out.println(rooms.get(activeRoom));
+                else if(choice.equals("talk")){
+                    JSONObject currentRoom = (JSONObject) rooms.get(activeRoom);
+                    System.out.println(currentRoom.get("characters"));
+                    String characterChoice = prompter.prompt("Who would you like to talk to?");
+                    JSONObject characterDialogue = (JSONObject) characterDialogueData;
+                    System.out.println(characterDialogue.get(characterChoice));
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {

@@ -10,14 +10,14 @@ public class RoomTest {
 
     @Before
     public void setUp() throws Exception {
-        roomTest = new Room("Test Player", new Player(), new Items());
+        roomTest = new Room("Test Player");
     }
 
     @Test
     public void addCharactersPositive() {
-        roomTest.addCharacters(new Character());
-        roomTest.addCharacters(new Character());
-        roomTest.addCharacters(new Character());
+        roomTest.addCharacters(new Character("pilot", "May day"));
+        roomTest.addCharacters(new Character("doctor","hello"));
+        roomTest.addCharacters(new Character("teacher", "hello too"));
         assertEquals(3, roomTest.getCharacters().size());
     }
 
