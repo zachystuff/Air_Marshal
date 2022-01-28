@@ -10,6 +10,8 @@ import org.json.simple.JSONArray;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class VerbParser {
@@ -23,13 +25,16 @@ public class VerbParser {
 
         switch(findChoiceSynonyms(choice)){
             case "move":
-                activeRoom = movePlayer(activeRoom, currentRoomData, allRooms);
+                activeRoom = movePlayer(activeRoom, currentRoomData, allRooms, player);
                 break;
             case "talk":
-                talkToCharacters(currentRoomData);
+                talkToCharacters(currentRoomData, player);
                 break;
             case "items":
                 handleItems(currentRoomData, player);
+                break;
+            case "inventory":
+                handleInventory(player);
                 break;
             default:
                 System.out.println("Enter a valid verb");
@@ -50,19 +55,30 @@ public class VerbParser {
         return characterDialogueData;
     }
 
-    private String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms){
+    private String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms, Player player){
         System.out.println(currentRoomData.get("directions"));
-        String directionChoice = prompter.prompt("Which direction would you like to go?");
+        String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|backwards|forward",
+                "Invalid direction chosen.");
         JSONObject directions = (JSONObject) currentRoomData.get("directions");
-        activeRoom = (String) directions.get(directionChoice);
-        System.out.println(allRooms.get(activeRoom));
-        return activeRoom;
+        //checks to see if player has the item needed to enter room they are trying to
+        if (authorizePlayerToEnter((String)directions.get(directionChoice), player)){
+            //only change the active room if authorization to enter
+            activeRoom = (String) directions.get(directionChoice);
+            System.out.println(allRooms.get(activeRoom));
+            return activeRoom;
+        };
+       return activeRoom;
     }
 
-    private void talkToCharacters(JSONObject currentRoomData) throws IOException, ParseException {
+    private void talkToCharacters(JSONObject currentRoomData, Player player) throws IOException, ParseException {
         System.out.println(currentRoomData.get("characters"));
         JSONObject characterDialogueData = getCharacterDialogueData();
         String characterChoice = prompter.prompt("Who would you like to talk to?");
+        if (characterChoice.equals("stewardess")){
+            if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)){
+                System.out.println("NOW IS WHEN WE WOULD TRIGGER END GAME SCENE");
+            }
+        }
         JSONObject characterDialogue = (JSONObject) characterDialogueData;
         System.out.println(characterDialogue.get(characterChoice));
     }
@@ -71,10 +87,7 @@ public class VerbParser {
         System.out.println(currentRoomData.get("items"));
         String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
         String item = itemSelected.replace(" ", "_");
-
-        // converts the JSON to a JSONARRAY
-        JSONArray itemsArray = (JSONArray) currentRoomData.get("items");
-
+        JSONArray itemsArray = (JSONArray) currentRoomData.get("items"); // converts the JSON to a JSONARRAY
         // Checks if the item entered by user is valid ie is in that specific room
         boolean isValidItem = itemsArray.stream().anyMatch(it -> it.equals(itemSelected.toLowerCase()));
 
@@ -92,10 +105,40 @@ public class VerbParser {
         }
     }
 
+    private void handleInventory(Player player){
+        List<Item> inventory = player.getInventory();
+        if (inventory.isEmpty()){
+            System.out.println("You don't have any items in your inventory");
+        } else{
+            System.out.println(inventory);
+            String dropItem = prompter.prompt("Would you like to drop any items in your inventory, yes or no?");
+            if(dropItem.equals("yes") || dropItem.equals("y")){
+                String itemSelected = prompter.prompt("Which of the above items would you like to drop from your inventory?");
+                System.out.println(deletedFromInventory(player, itemSelected));
+            }
+        }
+    }
+
+    //            MAKING SURE USER INPUT IS A VALID ENUM
+    private String deletedFromInventory(Player player, String itemSelected){
+        List<String> itemsInTheGame = enumList();
+        boolean itemExistOnAirCraft = itemsInTheGame.contains(itemSelected);
+        if(itemExistOnAirCraft) {
+            String item = itemSelected.replace(" ", "_").toUpperCase();
+            String isDeleted = player.dropItem(Item.valueOf(item)) ? itemSelected
+                    + " has been successfully deleted" : itemSelected + " doesn't exist in your inventory";
+            return isDeleted;
+        } else{
+            return itemSelected + " doesn't exist in your inventory";
+        }
+    }
+
     private String findChoiceSynonyms(String choice){
         String[] moveSynonyms = {"move", "walk", "run", "change room"};
         String[] talkSynonyms = {"talk", "speak", "converse", "chat"};
         String[] itemSynonyms = {"get", "items", "item", "take", "look", "find"};
+        String[] inventorySynonyms = {"inventory", "check inventory", "view inventory", "my items"};
+
         for(String word : moveSynonyms){
             if (word.equals(choice)){
                 return "move";
@@ -111,6 +154,50 @@ public class VerbParser {
                 return "items";
             }
         }
+        for (String word : inventorySynonyms){
+            if (word.equals(choice)){
+                return "inventory";
+            }
+        }
         return "NONE";
+    }
+
+
+    // method that generates list of String Enums
+    private List<String> enumList(){
+        List<String> itemList = new ArrayList<>();
+        for (Item i: Item.values()) {
+            itemList.add(i.toString());
+        }
+        return itemList;
+
+    private boolean authorizePlayerToEnter(String directionChoice, Player player){
+
+        switch(directionChoice){
+            //these require no keys or items to enter.
+            case "bathroom":
+            case "first class":
+            case "commercial class":
+                return true;
+            case "cockpit":
+                if (player.getInventory().contains(Item.POSTER)){
+                    System.out.println("You gained access with your tour POSTER!");
+                    return true;
+                }
+            case "galley":
+                if(player.getInventory().contains(Item.AIRCRAFT_GUIDE)){
+                    System.out.println("Your AIRCRAFT GUIDE allows you to navigate the lower deck!");
+                    return true;
+                }
+            case "cargo":
+                if(player.getInventory().contains(Item.CARGO_KEY)){
+                    System.out.println("You unlocked the cargo room door!");
+                    return true;
+                }
+            default:
+                System.out.println("You don't currently have access to this room");
+                return false;
+        }
+
     }
 }

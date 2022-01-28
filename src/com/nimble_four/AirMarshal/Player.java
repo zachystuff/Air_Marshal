@@ -4,8 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-// has an array list of items
+
+    private String name;
+    // has an array list of items
     private List<Item> inventory = new ArrayList<>();
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public void addToInventory(Item item){
         if(item != null){
@@ -15,6 +25,10 @@ public class Player {
 
     private void addItem(Item item){
         inventory.add(item);
+    }
+
+    public boolean dropItem(Item item){
+        return inventory.remove(item);
     }
 
     public List<Item> getInventory() {
