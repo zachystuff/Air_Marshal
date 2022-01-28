@@ -52,7 +52,8 @@ public class VerbParser {
 
     private String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms){
         System.out.println(currentRoomData.get("directions"));
-        String directionChoice = prompter.prompt("Which direction would you like to go?");
+        String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|backwards|forward",
+                "Invalid direction chosen.");
         JSONObject directions = (JSONObject) currentRoomData.get("directions");
         activeRoom = (String) directions.get(directionChoice);
         System.out.println(allRooms.get(activeRoom));
