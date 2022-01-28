@@ -17,7 +17,8 @@ public enum Item {
     DOCTORS_BAG("doctors bag"),
     ANONYMOUS_BAG("anonymous bag"),
     BOARDING_PASS("boarding pass"),
-    POISON("poison");
+    POISON("poison"),
+    CARGO_KEY("cargo key");
 
 
 

@@ -23,7 +23,7 @@ public class VerbParser {
 
         switch(findChoiceSynonyms(choice)){
             case "move":
-                activeRoom = movePlayer(activeRoom, currentRoomData, allRooms);
+                activeRoom = movePlayer(activeRoom, currentRoomData, allRooms, player);
                 break;
             case "talk":
                 talkToCharacters(currentRoomData);
@@ -50,13 +50,17 @@ public class VerbParser {
         return characterDialogueData;
     }
 
-    private String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms){
+    private String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms, Player player){
         System.out.println(currentRoomData.get("directions"));
         String directionChoice = prompter.prompt("Which direction would you like to go?");
         JSONObject directions = (JSONObject) currentRoomData.get("directions");
-        activeRoom = (String) directions.get(directionChoice);
-        System.out.println(allRooms.get(activeRoom));
-        return activeRoom;
+        //checks to see if player has the item needed to enter room they are trying to
+        if (authorizePlayerToEnter((String)directions.get(directionChoice), player)){
+            activeRoom = (String) directions.get(directionChoice);
+            System.out.println(allRooms.get(activeRoom));
+            return activeRoom;
+        };
+       return activeRoom;
     }
 
     private void talkToCharacters(JSONObject currentRoomData) throws IOException, ParseException {
@@ -112,5 +116,28 @@ public class VerbParser {
             }
         }
         return "NONE";
+    }
+
+    private boolean authorizePlayerToEnter(String directionChoice, Player player){
+        if(directionChoice.equals("bathroom") | directionChoice.equals("first class") | directionChoice.equals("commercial class")){
+            return true;
+        }
+        else if(directionChoice.equals("cockpit") && player.getInventory().contains(Item.POSTER)){
+            System.out.println("The tour poster got you in!");
+            return true;
+        }
+        else if(directionChoice.equals("galley") && player.getInventory().contains(Item.AIRCRAFT_GUIDE)){
+            System.out.println("Thanks to your aircraft guide, you know where you are going!");
+            return true;
+        }
+        else if(directionChoice.equals("cargo") && player.getInventory().contains(Item.CARGO_KEY)){
+            System.out.println("You unlocked the cargo room door!");
+            return true;
+        }
+        else{
+            System.out.println("You don't currently have access to this room");
+            return false;
+        }
+
     }
 }
