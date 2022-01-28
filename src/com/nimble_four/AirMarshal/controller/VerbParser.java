@@ -52,7 +52,8 @@ public class VerbParser {
 
     private String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms, Player player){
         System.out.println(currentRoomData.get("directions"));
-        String directionChoice = prompter.prompt("Which direction would you like to go?");
+        String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|backwards|forward",
+                "Invalid direction chosen.");
         JSONObject directions = (JSONObject) currentRoomData.get("directions");
         //checks to see if player has the item needed to enter room they are trying to
         if (authorizePlayerToEnter((String)directions.get(directionChoice), player)){
