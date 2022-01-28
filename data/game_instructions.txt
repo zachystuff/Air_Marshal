@@ -5,3 +5,19 @@
    | | | '_ \/ __| __| '__| | | |/ __| __| |/ _ \| '_ \/ __|
   _| |_| | | \__ \ |_| |  | |_| | (__| |_| | (_) | | | \__ \
  |_____|_| |_|___/\__|_|   \__,_|\___|\__|_|\___/|_| |_|___/
+
+Your mission, as the Air Marshal, is to keep the flight passengers safe. In order to do so you have to determine who
+is the criminal. To help you achieve this you will have to go around the plane, to talk to the passengers and crew,
+and gather clues.
+
+To play the games your options are:
+
+1. Move - this will allow you to move across different sections of the plane
+2. Talk - as you visit each section this will allow you to interact with the passengers and crew
+3. Items - this will allow you to see the items that are in the room and the player will be prompted
+           to select which item to collect
+4. Inventory - this will display the items the player has collected - "under development"
+5. Journal - this will display all the clues the player has collected - "under development"
+6. Help - "under development"
+
+To win the game you, as the Air Marshal, have to guess who the criminal is.
