@@ -164,12 +164,13 @@ public class VerbParser {
 
 
     // method that generates list of String Enums
-    private List<String> enumList(){
+    private List<String> enumList() {
         List<String> itemList = new ArrayList<>();
-        for (Item i: Item.values()) {
+        for (Item i : Item.values()) {
             itemList.add(i.toString());
         }
         return itemList;
+    }
 
     private boolean authorizePlayerToEnter(String directionChoice, Player player){
 
