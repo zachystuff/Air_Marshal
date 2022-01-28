@@ -58,7 +58,8 @@
       "items": [
         "drinks",
         "food",
-        "spatula"
+        "spatula",
+        "cargo key"
       ],
       "directions": {
         "up": "commercial class",

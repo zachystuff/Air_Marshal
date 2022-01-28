@@ -23,10 +23,10 @@ public class VerbParser {
 
         switch(findChoiceSynonyms(choice)){
             case "move":
-                activeRoom = movePlayer(activeRoom, currentRoomData, allRooms);
+                activeRoom = movePlayer(activeRoom, currentRoomData, allRooms, player);
                 break;
             case "talk":
-                talkToCharacters(currentRoomData);
+                talkToCharacters(currentRoomData, player);
                 break;
             case "items":
                 handleItems(currentRoomData, player);
@@ -50,19 +50,29 @@ public class VerbParser {
         return characterDialogueData;
     }
 
-    private String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms){
+    private String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms, Player player){
         System.out.println(currentRoomData.get("directions"));
         String directionChoice = prompter.prompt("Which direction would you like to go?");
         JSONObject directions = (JSONObject) currentRoomData.get("directions");
-        activeRoom = (String) directions.get(directionChoice);
-        System.out.println(allRooms.get(activeRoom));
-        return activeRoom;
+        //checks to see if player has the item needed to enter room they are trying to
+        if (authorizePlayerToEnter((String)directions.get(directionChoice), player)){
+            //only change the active room if authorization to enter
+            activeRoom = (String) directions.get(directionChoice);
+            System.out.println(allRooms.get(activeRoom));
+            return activeRoom;
+        };
+       return activeRoom;
     }
 
-    private void talkToCharacters(JSONObject currentRoomData) throws IOException, ParseException {
+    private void talkToCharacters(JSONObject currentRoomData, Player player) throws IOException, ParseException {
         System.out.println(currentRoomData.get("characters"));
         JSONObject characterDialogueData = getCharacterDialogueData();
         String characterChoice = prompter.prompt("Who would you like to talk to?");
+        if (characterChoice.equals("stewardess")){
+            if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)){
+                System.out.println("NOW IS WHEN WE WOULD TRIGGER END GAME SCENE");
+            }
+        }
         JSONObject characterDialogue = (JSONObject) characterDialogueData;
         System.out.println(characterDialogue.get(characterChoice));
     }
@@ -112,5 +122,34 @@ public class VerbParser {
             }
         }
         return "NONE";
+    }
+
+    private boolean authorizePlayerToEnter(String directionChoice, Player player){
+
+        switch(directionChoice){
+            //these require no keys or items to enter.
+            case "bathroom":
+            case "first class":
+            case "commercial class":
+                return true;
+            case "cockpit":
+                if (player.getInventory().contains(Item.POSTER)){
+                    System.out.println("You gained access with your tour POSTER!");
+                    return true;
+                }
+            case "galley":
+                if(player.getInventory().contains(Item.AIRCRAFT_GUIDE)){
+                    System.out.println("Your AIRCRAFT GUIDE allows you to navigate the lower deck!");
+                    return true;
+                }
+            case "cargo":
+                if(player.getInventory().contains(Item.CARGO_KEY)){
+                    System.out.println("You unlocked the cargo room door!");
+                    return true;
+                }
+            default:
+                System.out.println("You don't currently have access to this room");
+                return false;
+        }
     }
 }
