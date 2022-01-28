@@ -26,7 +26,7 @@ public class VerbParser {
                 activeRoom = movePlayer(activeRoom, currentRoomData, allRooms, player);
                 break;
             case "talk":
-                talkToCharacters(currentRoomData);
+                talkToCharacters(currentRoomData, player);
                 break;
             case "items":
                 handleItems(currentRoomData, player);
@@ -56,6 +56,7 @@ public class VerbParser {
         JSONObject directions = (JSONObject) currentRoomData.get("directions");
         //checks to see if player has the item needed to enter room they are trying to
         if (authorizePlayerToEnter((String)directions.get(directionChoice), player)){
+            //only change the active room if authorization to enter
             activeRoom = (String) directions.get(directionChoice);
             System.out.println(allRooms.get(activeRoom));
             return activeRoom;
@@ -63,10 +64,15 @@ public class VerbParser {
        return activeRoom;
     }
 
-    private void talkToCharacters(JSONObject currentRoomData) throws IOException, ParseException {
+    private void talkToCharacters(JSONObject currentRoomData, Player player) throws IOException, ParseException {
         System.out.println(currentRoomData.get("characters"));
         JSONObject characterDialogueData = getCharacterDialogueData();
         String characterChoice = prompter.prompt("Who would you like to talk to?");
+        if (characterChoice.equals("stewardess")){
+            if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)){
+                System.out.println("NOW IS WHEN WE WOULD TRIGGER END GAME SCENE");
+            }
+        }
         JSONObject characterDialogue = (JSONObject) characterDialogueData;
         System.out.println(characterDialogue.get(characterChoice));
     }
@@ -121,6 +127,7 @@ public class VerbParser {
     private boolean authorizePlayerToEnter(String directionChoice, Player player){
 
         switch(directionChoice){
+            //these require no keys or items to enter.
             case "bathroom":
             case "first class":
             case "commercial class":
