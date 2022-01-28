@@ -119,25 +119,30 @@ public class VerbParser {
     }
 
     private boolean authorizePlayerToEnter(String directionChoice, Player player){
-        if(directionChoice.equals("bathroom") | directionChoice.equals("first class") | directionChoice.equals("commercial class")){
-            return true;
-        }
-        else if(directionChoice.equals("cockpit") && player.getInventory().contains(Item.POSTER)){
-            System.out.println("The tour poster got you in!");
-            return true;
-        }
-        else if(directionChoice.equals("galley") && player.getInventory().contains(Item.AIRCRAFT_GUIDE)){
-            System.out.println("Thanks to your aircraft guide, you know where you are going!");
-            return true;
-        }
-        else if(directionChoice.equals("cargo") && player.getInventory().contains(Item.CARGO_KEY)){
-            System.out.println("You unlocked the cargo room door!");
-            return true;
-        }
-        else{
-            System.out.println("You don't currently have access to this room");
-            return false;
-        }
 
+        switch(directionChoice){
+            case "bathroom":
+            case "first class":
+            case "commercial class":
+                return true;
+            case "cockpit":
+                if (player.getInventory().contains(Item.POSTER)){
+                    System.out.println("You gained access with your tour POSTER!");
+                    return true;
+                }
+            case "galley":
+                if(player.getInventory().contains(Item.AIRCRAFT_GUIDE)){
+                    System.out.println("Your AIRCRAFT GUIDE allows you to navigate the lower deck!");
+                    return true;
+                }
+            case "cargo":
+                if(player.getInventory().contains(Item.CARGO_KEY)){
+                    System.out.println("You unlocked the cargo room door!");
+                    return true;
+                }
+            default:
+                System.out.println("You don't currently have access to this room");
+                return false;
+        }
     }
 }
