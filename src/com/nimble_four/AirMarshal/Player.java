@@ -27,6 +27,10 @@ public class Player {
         inventory.add(item);
     }
 
+    public boolean dropItem(Item item){
+        return inventory.remove(item);
+    }
+
     public List<Item> getInventory() {
         String items = "";
 //        for (Item item: inventory) {
