@@ -6,6 +6,7 @@ import com.nimble_four.AirMarshal.Player;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.json.simple.JSONArray;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -70,12 +71,24 @@ public class VerbParser {
         System.out.println(currentRoomData.get("items"));
         String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
         String item = itemSelected.replace(" ", "_");
-        if (player.getInventory().contains(Item.valueOf(item))) {
-            System.out.println("Item was already added to inventory, Try selecting a different item");
+
+        // converts the JSON to a JSONARRAY
+        JSONArray itemsArray = (JSONArray) currentRoomData.get("items");
+
+        // Checks if the item entered by user is valid ie is in that specific room
+        boolean isValidItem = itemsArray.stream().anyMatch(it -> it.equals(itemSelected.toLowerCase()));
+
+        if(isValidItem) {
+            // checks if item is already in our inventory
+            if (player.getInventory().contains(Item.valueOf(item))) {
+                System.out.println("Item was already added to inventory, Try selecting a different item");
+            } else {
+                player.addToInventory(Item.valueOf(item));
+                System.out.println("Item successfully added");
+                System.out.println("You currently have: \r" + player.getInventory());
+            }
         } else {
-            player.addToInventory(Item.valueOf(item));
-            System.out.println("Item successfully added");
-            System.out.println("You currently have: \r" + player.getInventory());
+            System.out.println("You entered an Invalid item");
         }
     }
 
@@ -95,7 +108,7 @@ public class VerbParser {
         }
         for (String word : itemSynonyms){
             if (word.equals(choice)){
-                return "item";
+                return "items";
             }
         }
         return "NONE";
