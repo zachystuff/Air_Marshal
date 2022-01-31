@@ -5,14 +5,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.Scanner;
 import org.json.simple.parser.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Game {
     private Player player = new Player();
     private Prompter prompter = new Prompter(new Scanner(System.in));
     private String activeRoom = "commercial class";
     private VerbParser verbParser = new VerbParser();
+    private String currentTime = "3:20";
+    final Timer timer = new Timer();
 
     public void execute() {
         startGame();
@@ -30,6 +35,27 @@ public class Game {
 
         if (test.equals("yes") || test.equals("y")) {
             System.out.println("Enjoy the game Air Marshal " + player.getName());
+
+            timer.scheduleAtFixedRate(new TimerTask() {
+                int i = Integer.parseInt("200");
+                int displayMinutes;
+                int displaySeconds;
+                DecimalFormat formatter = new DecimalFormat("00");
+                String secondsFormatted;
+                public void run() {
+                    displayMinutes = (i / 60) % 60;
+                    displaySeconds = i % 60;
+                    secondsFormatted = formatter.format(displaySeconds);
+                    i--;
+                    currentTime = displayMinutes + ":" + secondsFormatted + " left";
+//                System.out.println(displayMinutes + ":" + displaySeconds);
+                    if (i< 0) {
+                        timer.cancel();
+                        System.out.println("\nGAME OVER: THE PASSENGER HAS BEEN MURDERED!");
+                    }
+                }
+            }, 0, 1000);
+
             turnLoop();
         }
     }
@@ -37,6 +63,7 @@ public class Game {
     private void turnLoop() {
         while (true) {
             try {
+                statusBar();
                 System.out.println("You are currently in the " + activeRoom);
                 menu();
                 String choice = prompter.prompt("What would you like to do? ");
@@ -44,6 +71,7 @@ public class Game {
                 // display list of items
                 // collect items
                 // task 306 & 268
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -62,6 +90,17 @@ public class Game {
                         "  Talk\n" +
                         "  Items \n" +
                         "  Inventory\n "
+        );
+    }
+
+    public void statusBar() {
+
+        System.out.println(
+                " \n***************************************\n| "
+                        + player.getName() + " | "
+                        +  activeRoom + " | "
+                        + currentTime + " | " +
+                        "\n***************************************\n"
         );
     }
 }
