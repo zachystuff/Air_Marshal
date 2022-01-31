@@ -1,5 +1,6 @@
 package com.nimble_four.AirMarshal.controller;
 
+import com.apps.util.Console;
 import com.apps.util.Prompter;
 import com.nimble_four.AirMarshal.Item;
 import com.nimble_four.AirMarshal.Player;
@@ -22,6 +23,8 @@ public class VerbParser {
 
         JSONObject allRooms = getRoomData();
         JSONObject currentRoomData = (JSONObject) allRooms.get(activeRoom);
+
+        Console.clear();
 
         switch(findChoiceSynonyms(choice)){
             case "move":
