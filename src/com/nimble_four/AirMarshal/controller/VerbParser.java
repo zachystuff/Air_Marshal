@@ -8,6 +8,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.json.simple.JSONArray;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class VerbParser {
         return characterDialogueData;
     }
 
-    private String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms, Player player){
+    private String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms, Player player) throws IOException, ParseException {
         System.out.println(currentRoomData.get("directions"));
         String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|backwards|forward",
                 "Invalid direction chosen.");
@@ -171,7 +172,7 @@ public class VerbParser {
         }
         return itemList;
     }
-    private boolean authorizePlayerToEnter(String directionChoice, Player player){
+    private boolean authorizePlayerToEnter(String directionChoice, Player player) throws IOException, ParseException {
 
         switch(directionChoice){
             //these require no keys or items to enter.
@@ -195,7 +196,8 @@ public class VerbParser {
                     return true;
                 }
             default:
-                System.out.println("You don't currently have access to this room");
+                JSONObject closedGateDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/closed_gate_dialogue.json"));
+                System.out.println(closedGateDialogue.get(directionChoice));
                 return false;
         }
 
