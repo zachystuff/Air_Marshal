@@ -77,7 +77,9 @@ public class VerbParser {
         String characterChoice = prompter.prompt("Who would you like to talk to?");
         if (characterChoice.equals("stewardess")){
             if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)){
-                System.out.println("NOW IS WHEN WE WOULD TRIGGER END GAME SCENE");
+                JSONObject endGameDialogue =(JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
+                System.out.println(endGameDialogue.get("end"));
+
             }
         }
         JSONObject characterDialogue = (JSONObject) characterDialogueData;

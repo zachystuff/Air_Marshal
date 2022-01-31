@@ -9,7 +9,8 @@
         "yellow handkerchief",
         "overhead luggage",
         "stethoscope",
-        "carton of cigarettes"
+        "carton of cigarettes",
+        "boarding pass"
       ],
       "directions": {
         "forward": "first class",
@@ -71,7 +72,8 @@
       "items": [
         "lawyers bag",
         "doctors bag",
-        "anonymous characters bag"
+        "anonymous characters bag",
+        "poison"
       ],
       "directions": {
         "backwards": "galley"
