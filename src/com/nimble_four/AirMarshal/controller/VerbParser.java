@@ -60,7 +60,6 @@ public class VerbParser {
         String[] talkSynonyms = {"talk", "speak", "converse", "chat"};
         String[] itemSynonyms = {"get", "items", "item", "take", "look", "find"};
         String[] inventorySynonyms = {"inventory", "check inventory", "view inventory", "my items"};
-
         for(String word : moveSynonyms){
             if (word.equals(choice)){
                 return "move";
