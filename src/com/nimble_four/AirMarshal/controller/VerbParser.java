@@ -8,7 +8,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.json.simple.JSONArray;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,9 +18,10 @@ public class VerbParser {
 
     private Prompter prompter = new Prompter(new Scanner(System.in));
 
+    //every choice the player makes passes through here. Then delegates the task to function calls.
+    //Functions calls should be abstracted out to a class to handle specific verb
     public String parseVerb(String choice, String activeRoom, Player player) throws IOException, ParseException {
-
-        JSONObject allRooms = getRoomData();
+        JSONObject allRooms = getRoomData();  //read in from resources/room_data.json
         JSONObject currentRoomData = (JSONObject) allRooms.get(activeRoom);
 
         switch(findChoiceSynonyms(choice)){
@@ -45,6 +45,7 @@ public class VerbParser {
     }
 
     private JSONObject getRoomData() throws IOException, ParseException {
+        //NOTE: "resources/room_data.json" can be edited to change in game items, characters, etc.
         Object roomData = new JSONParser().parse(new FileReader("resources/room_data.json"));
         JSONObject room = (JSONObject) roomData;
         JSONObject rooms = (JSONObject) room.get("rooms");
@@ -52,6 +53,7 @@ public class VerbParser {
     }
 
     private JSONObject getCharacterDialogueData() throws IOException, ParseException {
+        // NOTE: In game dialogue can be edited in "resources/character_dialogue.json"
         JSONObject characterDialogueData = (JSONObject) new JSONParser().parse(new FileReader("resources/character_dialogue.json"));
         return characterDialogueData;
     }
@@ -76,16 +78,19 @@ public class VerbParser {
         JSONObject characterDialogueData = getCharacterDialogueData();
         String characterChoice = prompter.prompt("Who would you like to talk to?");
         if (characterChoice.equals("stewardess")){
+            //this is how game ends
             if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)){
+                //NOTE: endgame dialogue can be edited in "resources/endgame.json"
                 JSONObject endGameDialogue =(JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
                 System.out.println(endGameDialogue.get("end"));
-                player.setPlaying(false);
+                player.setPlaying(false); //set isPlaying to "false" to break the game loop
             }
             return;
         }
         JSONObject characterDialogue = (JSONObject) characterDialogueData;
         System.out.println(characterDialogue.get(characterChoice));
     }
+
 
     private void handleItems(JSONObject currentRoomData, Player player){
         System.out.println(currentRoomData.get("items"));
@@ -109,12 +114,12 @@ public class VerbParser {
         }
     }
 
+    //view inventory and / or drop item from inventory
     private void handleInventory(Player player){
-        List<Item> inventory = player.getInventory();
-        if (inventory.isEmpty()){
+        if (player.getInventory().isEmpty()){
             System.out.println("You don't have any items in your inventory");
         } else{
-            System.out.println(inventory);
+            System.out.println(player.getInventory());
             String dropItem = prompter.prompt("Would you like to drop any items in your inventory, yes or no?");
             if(dropItem.equals("yes") || dropItem.equals("y")){
                 String itemSelected = prompter.prompt("Which of the above items would you like to drop from your inventory?");
@@ -138,6 +143,7 @@ public class VerbParser {
     }
 
     private String findChoiceSynonyms(String choice){
+        //allows multiple verbs inputted by the user to trigger 'synonym' of in-game action
         String[] moveSynonyms = {"move", "walk", "run", "change room"};
         String[] talkSynonyms = {"talk", "speak", "converse", "chat"};
         String[] itemSynonyms = {"get", "items", "item", "take", "look", "find"};
@@ -175,6 +181,9 @@ public class VerbParser {
         }
         return itemList;
     }
+
+    //prevents player from entering certain rooms if they don't already have access to it via required items
+    // POSTER -->  COCKPIT -- | -- AIRCRAFT GUIDE --> GALLEY -- | -- CARGO KEY --> CARGO
     private boolean authorizePlayerToEnter(String directionChoice, Player player) throws IOException, ParseException {
 
         switch(directionChoice){
@@ -183,17 +192,17 @@ public class VerbParser {
             case "first class":
             case "commercial class":
                 return true;
-            case "cockpit":
+            case "cockpit": //requires poster
                 if (player.getInventory().contains(Item.POSTER)){
                     System.out.println("You gained access with your tour POSTER!");
                     return true;
                 }
-            case "galley":
+            case "galley": //requires aircraft guide
                 if(player.getInventory().contains(Item.AIRCRAFT_GUIDE)){
                     System.out.println("Your AIRCRAFT GUIDE allows you to navigate the lower deck!");
                     return true;
                 }
-            case "cargo":
+            case "cargo": //requires cargo key
                 if(player.getInventory().contains(Item.CARGO_KEY)){
                     System.out.println("You unlocked the cargo room door!");
                     return true;
