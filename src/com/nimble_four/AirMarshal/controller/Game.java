@@ -1,4 +1,5 @@
 package com.nimble_four.AirMarshal.controller;
+import com.apps.util.Console;
 import com.apps.util.Prompter;
 import com.nimble_four.AirMarshal.Player;
 import java.io.FileNotFoundException;
@@ -50,6 +51,7 @@ public class Game {
                     currentTime = displayMinutes + ":" + secondsFormatted + " left";
 //                System.out.println(displayMinutes + ":" + displaySeconds);
                     if (i< 0) {
+                        Console.clear();
                         timer.cancel();
                         System.out.println("\nGAME OVER: THE PASSENGER HAS BEEN MURDERED!");
                     }
@@ -62,6 +64,8 @@ public class Game {
 
     private void turnLoop() {
         while (player.isPlaying()) {
+            Console.clear();
+
             try {
                 statusBar();
                 System.out.println("You are currently in the " + activeRoom);
