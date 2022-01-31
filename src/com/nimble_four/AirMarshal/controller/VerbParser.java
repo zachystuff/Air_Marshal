@@ -171,7 +171,6 @@ public class VerbParser {
         }
         return itemList;
     }
-
     private boolean authorizePlayerToEnter(String directionChoice, Player player){
 
         switch(directionChoice){
