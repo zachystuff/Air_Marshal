@@ -8,6 +8,7 @@ public class Player {
     private String name;
     // has an array list of items
     private List<Item> inventory = new ArrayList<>();
+    private boolean playing = true;
 
     public String getName() {
         return name;
@@ -29,6 +30,14 @@ public class Player {
 
     public boolean dropItem(Item item){
         return inventory.remove(item);
+    }
+
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
     }
 
     public List<Item> getInventory() {

@@ -79,8 +79,9 @@ public class VerbParser {
             if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)){
                 JSONObject endGameDialogue =(JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
                 System.out.println(endGameDialogue.get("end"));
-
+                player.setPlaying(false);
             }
+            return;
         }
         JSONObject characterDialogue = (JSONObject) characterDialogueData;
         System.out.println(characterDialogue.get(characterChoice));

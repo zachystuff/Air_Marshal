@@ -31,7 +31,7 @@ public class Game {
             e.printStackTrace();
         }
         player.setName(prompter.prompt("What is your name? "));
-        String test = prompter.prompt("Please enter yes if you want to play? ", "yes|y", "Invalid choice: enter yes");
+        String test = prompter.prompt("Please enter yes if you want to play? ", "yes|y", "Invalid choice: enter yes to play");
 
         if (test.equals("yes") || test.equals("y")) {
             System.out.println("Enjoy the game Air Marshal " + player.getName());
@@ -61,7 +61,7 @@ public class Game {
     }
 
     private void turnLoop() {
-        while (true) {
+        while (player.isPlaying()) {
             try {
                 statusBar();
                 System.out.println("You are currently in the " + activeRoom);
