@@ -19,6 +19,8 @@ public class VerbParser {
 
     private Prompter prompter = new Prompter(new Scanner(System.in));
 
+    private  Object roomData;
+
     public String parseVerb(String choice, String activeRoom, Player player) throws IOException, ParseException {
 
         JSONObject allRooms = getRoomData();
@@ -37,7 +39,7 @@ public class VerbParser {
                 handleItems(currentRoomData, player);
                 break;
             case "inventory":
-                handleInventory(player);
+                handleInventory(currentRoomData, player);
                 break;
             default:
                 System.out.println("Enter a valid verb");
@@ -47,7 +49,10 @@ public class VerbParser {
     }
 
     private JSONObject getRoomData() throws IOException, ParseException {
-        Object roomData = new JSONParser().parse(new FileReader("resources/room_data.json"));
+       if (roomData == null){
+           roomData = new JSONParser().parse(new FileReader("resources/room_data.json"));
+           System.out.println("ROOMDATA INSTIANTED");
+       }
         JSONObject room = (JSONObject) roomData;
         JSONObject rooms = (JSONObject) room.get("rooms");
         return rooms;
@@ -87,28 +92,37 @@ public class VerbParser {
     }
 
     private void handleItems(JSONObject currentRoomData, Player player){
-        System.out.println(currentRoomData.get("items"));
-        String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
-        String item = itemSelected.replace(" ", "_");
         JSONArray itemsArray = (JSONArray) currentRoomData.get("items"); // converts the JSON to a JSONARRAY
-        // Checks if the item entered by user is valid ie is in that specific room
-        boolean isValidItem = itemsArray.stream().anyMatch(it -> it.equals(itemSelected.toLowerCase()));
+        // If the room has items ie all the items in the room haven't yet been Picked up
+        if(itemsArray.size() != 0) {
+            System.out.println(currentRoomData.get("items"));
+            String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
+            String item = itemSelected.replace(" ", "_");
+            // Checks if the item entered by user is valid ie is in that specific room
+            boolean isValidItem = itemsArray.stream().anyMatch(it -> it.equals(itemSelected.toLowerCase()));
 
-        if(isValidItem) {
-            // checks if item is already in our inventory
-            if (player.getInventory().contains(Item.valueOf(item))) {
-                System.out.println("Item was already added to inventory, Try selecting a different item");
+            if (isValidItem) {
+                // checks if item is already in our inventory
+                if (player.getInventory().contains(Item.valueOf(item))) {
+                    System.out.println("Item was already added to inventory, Try selecting a different item");
+                } else {
+                    // Once an item is picked up, it is removed from the room
+                    Object itemz = (Object) itemSelected.toLowerCase();
+                    itemsArray.remove(itemz);
+                    // Added to players inventory
+                    player.addToInventory(Item.valueOf(item));
+                    System.out.println("Item successfully added");
+                    System.out.println("You currently have: \r" + player.getInventory());
+                }
             } else {
-                player.addToInventory(Item.valueOf(item));
-                System.out.println("Item successfully added");
-                System.out.println("You currently have: \r" + player.getInventory());
+                System.out.println("You entered an Invalid item");
             }
         } else {
-            System.out.println("You entered an Invalid item");
+            System.out.println("No items left, You've picked up all the items in the room");
         }
     }
 
-    private void handleInventory(Player player){
+    private void handleInventory(JSONObject currentRoomData, Player player){
         List<Item> inventory = player.getInventory();
         if (inventory.isEmpty()){
             System.out.println("You don't have any items in your inventory");
@@ -117,19 +131,25 @@ public class VerbParser {
             String dropItem = prompter.prompt("Would you like to drop any items in your inventory, yes or no?");
             if(dropItem.equals("yes") || dropItem.equals("y")){
                 String itemSelected = prompter.prompt("Which of the above items would you like to drop from your inventory?");
-                System.out.println(deletedFromInventory(player, itemSelected));
+                System.out.println(deletedFromInventory(currentRoomData, player, itemSelected));
             }
         }
     }
 
     //            MAKING SURE USER INPUT IS A VALID ENUM
-    private String deletedFromInventory(Player player, String itemSelected){
+    private String deletedFromInventory(JSONObject currentRoomData, Player player, String itemSelected){
         List<String> itemsInTheGame = enumList();
         boolean itemExistOnAirCraft = itemsInTheGame.contains(itemSelected);
         if(itemExistOnAirCraft) {
             String item = itemSelected.replace(" ", "_").toUpperCase();
             String isDeleted = player.dropItem(Item.valueOf(item)) ? itemSelected
                     + " has been successfully deleted" : itemSelected + " doesn't exist in your inventory";
+
+            JSONArray itemsArray = (JSONArray) currentRoomData.get("items"); // converts the JSON to a JSONARRAY
+            // Once an item is picked up, it is removed from the room
+            Object itemz = (Object) itemSelected.toLowerCase();
+            itemsArray.add(itemz);
+
             return isDeleted;
         } else{
             return itemSelected + " doesn't exist in your inventory";
@@ -140,7 +160,7 @@ public class VerbParser {
         String[] moveSynonyms = {"move", "walk", "run", "change room"};
         String[] talkSynonyms = {"talk", "speak", "converse", "chat"};
         String[] itemSynonyms = {"get", "items", "item", "take", "look", "find"};
-        String[] inventorySynonyms = {"inventory", "check inventory", "view inventory", "my items"};
+        String[] inventorySynonyms = {"inventory", "check inventory", "view inventory", "Inventory"};
 
         for(String word : moveSynonyms){
             if (word.equals(choice)){
