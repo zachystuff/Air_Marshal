@@ -4,22 +4,23 @@ import com.apps.util.Prompter;
 import com.nimble_four.AirMarshal.Item;
 import com.nimble_four.AirMarshal.Player;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.Scanner;
+
+import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Game {
     private Player player = new Player();
     private Prompter prompter = new Prompter(new Scanner(System.in));
-    private String activeRoom = "commercial class"; // By default game starts commercial class
-    private VerbParser verbParser = new VerbParser();   // VerbParser is responsible for handling player actions
-    private String currentTime = "3:20";
-    final Timer timer = new Timer();
+    private String activeRoom = "commercial class";
+    private VerbParser verbParser = new VerbParser();
+    private GameTimeKeeper timer;
+
 
     public void execute() {
         startGame();
@@ -38,42 +39,19 @@ public class Game {
         // player is prompted, typing "yes" or "y" allows them to enter the game
         if (test.equals("yes") || test.equals("y")) {
             System.out.println("Enjoy the game Air Marshal " + player.getName());
-
-            // NOTE: The game is timed and once the timer runs out, it game over.
-            // Timer starts once the app gets run
-            timer.scheduleAtFixedRate(new TimerTask() {
-                int i = Integer.parseInt("200");
-                int displayMinutes;
-                int displaySeconds;
-                DecimalFormat formatter = new DecimalFormat("00");
-                String secondsFormatted;
-                public void run() {
-                    displayMinutes = (i / 60) % 60;
-                    displaySeconds = i % 60;
-                    secondsFormatted = formatter.format(displaySeconds);
-                    i--;
-                    currentTime = displayMinutes + ":" + secondsFormatted + " left";
-//                System.out.println(displayMinutes + ":" + displaySeconds);
-                    if (i< 0) { // if the time runs out
-                        Console.clear();    // console is cleared
-                        timer.cancel(); // timer is stopped
-                        System.out.println("\nGAME OVER: THE PASSENGER HAS BEEN MURDERED!");
-                    }
-                }
-            }, 0, 1000);
-            // Once timer has been loaded, the player is able to start playing the game
+            timer = new GameTimeKeeper();
             turnLoop();
         }
     }
 
     private void turnLoop() {
         while (player.isPlaying()) {
+
             Console.clear();// clears console after every turn a player takes
 
             try {
                 statusBar();
                 System.out.println("You are currently in the " + activeRoom);
-
                 if (player.getInventory().contains(Item.AIRCRAFT_GUIDE)) {
                     subMenu();
                 }
@@ -81,8 +59,14 @@ public class Game {
                     menu();
                 }
                 String choice = prompter.prompt("What would you like to do? ");
-                // handle options from the menu, such as moving, talking, taking items and inventory
-                activeRoom = verbParser.parseVerb(choice, activeRoom, player);
+
+                if (choice.equals("save")){
+                    saveGame();
+                    player.setPlaying(false);
+                }
+                else{
+                    activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
+                }
 
                 // catch block because verbParser.parseVerb(...) uses a fileReader that requires exception handling
             } catch (FileNotFoundException e) {
@@ -94,6 +78,31 @@ public class Game {
             }
         }
     }
+    /*
+     * to save we need 1. Player name 2. Player inventory 3. Current activeRoom 4. Current time left in game.
+     * Then write data to JSON file (resources/saves/games.json). Key for JSON will be players name(?)
+     */
+    private void saveGame() {
+        System.out.println("SAVE THE GAME NOW!");
+        System.out.println("PLAYERS NAME: " + player.getName()); //1
+        System.out.println("PLAYER INVENTORY:" + player.getInventory()); //2
+        System.out.println("ACTIVE ROOM:" + activeRoom); //3
+        System.out.println("CURRENT TIME LEFT" + timer.getCurrentTime()); //4
+        HashMap<String,Object> data = new HashMap<>();
+        data.put("inventory", player.getInventory());
+        data.put("activeRoom", activeRoom);
+        data.put("timeleft", timer.getCurrentTime());
+        JSONObject newSaveData = new JSONObject();
+        newSaveData.put(player.getName(), data);
+        try{
+            FileWriter file = new FileWriter("resources/saves/games.json");
+            file.write(newSaveData.toJSONString());
+            file.close();
+            System.out.println("File Saved!");
+        }catch (IOException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+    }
 
     // displays the actions a player can choose to do
     public void menu() {
@@ -103,7 +112,8 @@ public class Game {
                         "  Move\n" +
                         "  Talk\n" +
                         "  Items \n" +
-                        "  Inventory\n "
+                        "  Inventory\n " +
+                        "  Save"
         );
     }
 
@@ -128,9 +138,11 @@ public class Game {
                 " \n***************************************\n| "
                         + player.getName() + " | "
                         +  activeRoom + " | "
-                        + currentTime + " | " +
+                        + timer.getCurrentTime() + " | " +
                         "\n***************************************\n"
         );
     }
+
+
 }
 
