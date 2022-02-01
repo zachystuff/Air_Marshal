@@ -196,7 +196,8 @@ public class VerbParser {
             JSONArray itemsArray = (JSONArray) currentRoomData.get("items"); // converts the JSON to a JSONARRAY
             // If the room has items ie all the items in the room haven't yet been Picked up
             if (itemsArray.size() != 0) {
-                System.out.println(currentRoomData.get("items"));
+//                System.out.println(currentRoomData.get("items"));
+                displayItems(itemsArray);
                 String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
                 String item = itemSelected.replace(" ", "_");
                 // Checks if the item entered by user is valid ie is in that specific room
@@ -222,6 +223,18 @@ public class VerbParser {
                 System.out.println("No items left, You've picked up all the items in the room");
             }
 
+        }
+
+        // method that generates a list of the items into a more readable format
+        private static void displayItems(JSONArray itemsArray){
+            String leftAlignFormat = "| %-30s |%n";
+            System.out.format("\u001B[32m" + "*--------------------------------*%n");
+            System.out.format("| ITEMS                          |%n");
+            System.out.format("+--------------------------------+%n");
+            for (Object item: itemsArray) {
+                System.out.format(leftAlignFormat, item);
+            }
+            System.out.format("*--------------------------------*%n" + "\u001B[0m");
         }
     }
 
