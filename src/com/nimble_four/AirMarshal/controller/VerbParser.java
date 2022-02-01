@@ -11,6 +11,8 @@ import org.json.simple.JSONArray;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -43,6 +45,9 @@ public class VerbParser {
             case "inventory":
                 InventoryHandler.handleInventory(currentRoomData, player);
                 break;
+            case "map":
+                MapHandler.handleMap(activeRoom);
+                break;
             default:
                 System.out.println("Enter a valid verb");
                 break;
@@ -70,14 +75,15 @@ public class VerbParser {
         return characterDialogueData;
     }
 
-    //funnels player input into 1 of 5 possibilities: move, talk, items, inventory, or "invalid entry"
+    //funnels player input into 1 of 6 possibilities: move, talk, items, inventory, map, or "invalid entry"
 
     private String findChoiceSynonyms(String choice) {
         //allows multiple verbs inputted by the user to trigger 'synonym' of in-game action
-        String[] moveSynonyms = {"move", "walk", "run", "change room"};
-        String[] talkSynonyms = {"talk", "speak", "converse", "chat"};
-        String[] itemSynonyms = {"get", "items", "item", "take", "look", "find"};
+        String[] moveSynonyms = {"move", "walk", "run", "change room", "move room"};
+        String[] talkSynonyms = {"talk", "speak", "converse", "chat", "interact"};
+        String[] itemSynonyms = {"get", "items", "item", "take", "look", "find", "pick up"};
         String[] inventorySynonyms = {"inventory", "check inventory", "view inventory", "Inventory"};
+        String[] mapSynonyms = {"map", "view map", "check map", "Map"};
 
         for (String word : moveSynonyms) {
             if (word.equals(choice)) {
@@ -97,6 +103,11 @@ public class VerbParser {
         for (String word : inventorySynonyms) {
             if (word.equals(choice)) {
                 return "inventory";
+            }
+        }
+        for (String word : mapSynonyms) {
+            if (word.equals(choice)) {
+                return "map";
             }
         }
         return "NONE";
@@ -166,8 +177,8 @@ public class VerbParser {
                     JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
                     System.out.println(endGameDialogue.get("end"));
                     player.setPlaying(false); //set isPlaying to "false" to break the game loop
+                    return;
                 }
-                return;
             }
             JSONObject characterDialogue = (JSONObject) characterDialogueData;
             System.out.println(characterDialogue.get(characterChoice));
@@ -256,6 +267,17 @@ public class VerbParser {
                 itemList.add(i.toString());
             }
             return itemList;
+        }
+    }
+
+    private static class MapHandler {
+        // the activeRoom will be used to dynamically read the text file containing the corresponding room map
+        private static void handleMap (String activeRoom) {
+            try {
+                Files.readAllLines(Path.of("resources/maps/" + activeRoom +".txt")).forEach(System.out::println);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

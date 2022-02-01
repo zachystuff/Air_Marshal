@@ -1,6 +1,7 @@
 package com.nimble_four.AirMarshal.controller;
 import com.apps.util.Console;
 import com.apps.util.Prompter;
+import com.nimble_four.AirMarshal.Item;
 import com.nimble_four.AirMarshal.Player;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -69,7 +70,13 @@ public class Game {
             try {
                 statusBar();
                 System.out.println("You are currently in the " + activeRoom);
-                menu();
+
+                if (player.getInventory().contains(Item.AIRCRAFT_GUIDE)) {
+                    subMenu();
+                }
+                else {
+                    menu();
+                }
                 String choice = prompter.prompt("What would you like to do? ");
                 activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
                 // display list of items
@@ -96,6 +103,21 @@ public class Game {
                         "  Inventory\n "
         );
     }
+
+    // add sub-menu
+    // sub-menu will only show once the required item has been gathered
+    public void subMenu() {
+        System.out.println("-- Menu Options --");
+        System.out.println(
+                "Your options are: \n" +
+                        "  Move\n" +
+                        "  Talk\n" +
+                        "  Items \n" +
+                        "  Inventory\n" +
+                        "  Map\n "
+        );
+    }
+
 
     public void statusBar() {
 
