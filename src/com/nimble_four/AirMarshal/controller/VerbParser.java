@@ -231,7 +231,7 @@ public class VerbParser {
             if (player.getInventory().isEmpty()) {
                 System.out.println("You don't have any items in your inventory");
             } else {
-                System.out.println(player.getInventory());
+                player.displayInventory();
                 String dropItem = prompter.prompt("Would you like to drop any items in your inventory, yes or no?");
                 if (dropItem.equals("yes") || dropItem.equals("y")) {
                     String itemSelected = prompter.prompt("Which of the above items would you like to drop from your inventory?");

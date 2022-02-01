@@ -43,10 +43,18 @@ public class Player {
     }
 
     public List<Item> getInventory() {
-        String items = "";
-//        for (Item item: inventory) {
-//            System.out.println(item);
-//        }
         return inventory;
+    }
+
+    public void displayInventory(){
+        String leftAlignFormat = "| %-30s |%n";
+        System.out.format("\u001B[34m" + "*--------------------------------*%n");
+        System.out.format("| INVENTORY                      |%n");
+        System.out.format("+--------------------------------+%n");
+                for (Item item: inventory) {
+                    System.out.format(leftAlignFormat, item);
+        }
+
+        System.out.format("*--------------------------------*%n" + "\u001B[0m");
     }
 }
