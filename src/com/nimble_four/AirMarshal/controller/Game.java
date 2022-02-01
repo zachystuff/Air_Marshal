@@ -16,8 +16,8 @@ import java.util.TimerTask;
 public class Game {
     private Player player = new Player();
     private Prompter prompter = new Prompter(new Scanner(System.in));
-    private String activeRoom = "commercial class";
-    private VerbParser verbParser = new VerbParser();
+    private String activeRoom = "commercial class"; // By default game starts commercial class
+    private VerbParser verbParser = new VerbParser();   // VerbParser is responsible for handling player actions
     private String currentTime = "3:20";
     final Timer timer = new Timer();
 
@@ -26,6 +26,7 @@ public class Game {
     }
 
     private void startGame() {
+        // Reads game intro and instructions from data/json files at the beginning of the game
         try {
             Files.readAllLines(Path.of("data/game_intro.txt")).forEach(System.out::println);
             Files.readAllLines(Path.of("data/game_instructions.txt")).forEach(System.out::println);
@@ -34,10 +35,12 @@ public class Game {
         }
         player.setName(prompter.prompt("What is your name? "));
         String test = prompter.prompt("Please enter yes if you want to play? ", "yes|y", "Invalid choice: enter yes to play");
-
+        // player is prompted, typing "yes" or "y" allows them to enter the game
         if (test.equals("yes") || test.equals("y")) {
             System.out.println("Enjoy the game Air Marshal " + player.getName());
 
+            // NOTE: The game is timed and once the timer runs out, it game over.
+            // Timer starts once the app gets run
             timer.scheduleAtFixedRate(new TimerTask() {
                 int i = Integer.parseInt("200");
                 int displayMinutes;
@@ -51,21 +54,21 @@ public class Game {
                     i--;
                     currentTime = displayMinutes + ":" + secondsFormatted + " left";
 //                System.out.println(displayMinutes + ":" + displaySeconds);
-                    if (i< 0) {
-                        Console.clear();
-                        timer.cancel();
+                    if (i< 0) { // if the time runs out
+                        Console.clear();    // console is cleared
+                        timer.cancel(); // timer is stopped
                         System.out.println("\nGAME OVER: THE PASSENGER HAS BEEN MURDERED!");
                     }
                 }
             }, 0, 1000);
-
+            // Once timer has been loaded, the player is able to start playing the game
             turnLoop();
         }
     }
 
     private void turnLoop() {
         while (player.isPlaying()) {
-            Console.clear();
+            Console.clear();// clears console after every turn a player takes
 
             try {
                 statusBar();
@@ -78,11 +81,10 @@ public class Game {
                     menu();
                 }
                 String choice = prompter.prompt("What would you like to do? ");
-                activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
-                // display list of items
-                // collect items
-                // task 306 & 268
+                // handle options from the menu, such as moving, talking, taking items and inventory
+                activeRoom = verbParser.parseVerb(choice, activeRoom, player);
 
+                // catch block because verbParser.parseVerb(...) uses a fileReader that requires exception handling
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -93,6 +95,7 @@ public class Game {
         }
     }
 
+    // displays the actions a player can choose to do
     public void menu() {
         System.out.println("-- Menu Options --");
         System.out.println(
@@ -118,7 +121,7 @@ public class Game {
         );
     }
 
-
+    // Displays a tab containing player name, current room & the time left
     public void statusBar() {
 
         System.out.println(

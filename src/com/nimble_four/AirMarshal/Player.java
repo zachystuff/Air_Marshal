@@ -8,6 +8,8 @@ public class Player {
     private String name;
     // has an array list of items
     private List<Item> inventory = new ArrayList<>();
+    // boolean that lets dictates whether the player is playing.
+    // if true, keeps the while loop in the Game.java running
     private boolean playing = true;
 
     public String getName() {
