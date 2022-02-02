@@ -52,7 +52,7 @@ public class Game {
         Console.clear();
         // player is prompted with play game menu options
         playGameOptions();
-        String choice = prompter.prompt("Please enter your choice: ", "1|2|3", "Invalid choice: enter 1, 2, or 3");
+        String choice = prompter.prompt("Please enter your choice: ", "1|2|3|4", "Invalid choice: enter 1, 2, 3, or 4");
         if(Integer.parseInt(choice) == 2) {
             System.out.println("Hope you will come back again!");
             System.exit(0);
