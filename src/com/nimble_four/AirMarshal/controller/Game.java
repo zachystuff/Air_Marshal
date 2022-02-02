@@ -16,7 +16,8 @@ import org.json.simple.parser.*;
 
 public class Game {
     private Player player = new Player();
-    private Prompter prompter = new Prompter(new Scanner(System.in));
+    private Scanner scanner = new Scanner(System.in);
+    private Prompter prompter = new Prompter(scanner);
     private String activeRoom = "commercial class";
     private VerbParser verbParser = new VerbParser();
     private GameTimeKeeper timer;
@@ -43,7 +44,7 @@ public class Game {
         // player is prompted, typing "yes" or "y" allows them to enter the game
         if (test.equals("yes") || test.equals("y")) {
             System.out.println("Enjoy the game Air Marshal " + player.getName());
-            timer = new GameTimeKeeper(player);
+            timer = new GameTimeKeeper(player, scanner);
             turnLoop();
         }
     }
@@ -63,13 +64,17 @@ public class Game {
                     menu();
                 }
                 String choice = prompter.prompt("What would you like to do? ");
-
-                if (choice.equals("save")){
-                    saveGame();
-                    player.setPlaying(false);
+                if (timer.isTimeLeft()) {
+                    if (choice.equals("save")){
+                        saveGame();
+                        player.setPlaying(false);
+                    }
+                    else{
+                        activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
+                    }
                 }
-                else{
-                    activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
+                else {
+                    timer.gameOver(player, scanner);
                 }
 
                 // catch block because verbParser.parseVerb(...) uses a fileReader that requires exception handling
