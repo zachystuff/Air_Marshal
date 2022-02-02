@@ -43,7 +43,7 @@ public class GameTimeKeeper extends Timer {
                     timer.cancel();
                 }
             }
-        }, 0, 100);
+        }, 0, 1000);
     }
 
     public String getCurrentTime() {
