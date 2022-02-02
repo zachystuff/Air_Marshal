@@ -5,13 +5,18 @@ import com.nimble_four.AirMarshal.Item;
 import com.nimble_four.AirMarshal.Player;
 import com.nimble_four.AirMarshal.music.MusicPlayer;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
@@ -62,6 +67,10 @@ public class Game {
                 e.printStackTrace();
             }
         }
+  if(Integer.parseInt(choice) == 4){
+      player.setName(prompter.prompt("What is your name? "));
+      loadGame(player.getName());
+  }
         player.setName(prompter.prompt("What is your name? "));
         System.out.println("Enjoy the game Air Marshal " + player.getName());
 
@@ -69,6 +78,39 @@ public class Game {
         MusicPlayer.controller();
         turnLoop();
     }
+ private void loadGame(String name) {
+        try{
+            System.out.println("Loading game for " + name);
+            JSONObject loadedFile = (JSONObject) new JSONParser().parse(new FileReader("resources/saves/games.json")); //the entire data file
+            JSONObject loadedData = (JSONObject) loadedFile.get(name); // this is the user's specific data
+            //Load room
+            String loadedRoom = (String) loadedData.get("activeRoom");
+            activeRoom = loadedRoom;
+            //set players inventory
+            String itemString = (String) loadedData.get("inventory");
+            String[] arr = itemString.split(", |\\[|\\]|,");
+            List<Item> inventory = new ArrayList<>();
+            for (String s : arr){
+                for (Item i : Item.values()){
+                    if(i.getName().equals(s)){
+                        inventory.add(i);
+                    }
+                }
+            }
+            player.setInventory(inventory);
+            //Get time and parse it
+            String timeleft = (String) loadedData.get("timeleft");
+            int hour = Integer.parseInt(timeleft.substring(0,1)) * 60;
+            int min = Integer.parseInt(timeleft.substring(2,4));
+            int sum = min + hour;
+            //kick off game with saved data
+            timer = new GameTimeKeeper(player, scanner, sum);
+            MusicPlayer.controller();
+            turnLoop();
+        } catch(Exception e){
+            System.out.println("ERROR: " + e.getMessage());
+        }
+ }
 
     private void turnLoop() {
         while (player.isPlaying()) {
@@ -118,11 +160,12 @@ public class Game {
         System.out.println("PLAYER INVENTORY:" + player.getInventory()); //2
         System.out.println("ACTIVE ROOM:" + activeRoom); //3
         System.out.println("CURRENT TIME LEFT" + timer.getCurrentTime()); //4
-        HashMap<String,Object> data = new HashMap<>();
-        data.put("inventory", player.getInventory());
+        JSONObject data = new JSONObject();
+        data.put("inventory", player.getInventory().toString());
         data.put("activeRoom", activeRoom);
         data.put("timeleft", timer.getCurrentTime());
         JSONObject newSaveData = new JSONObject();
+        System.out.println(data);
         newSaveData.put(player.getName(), data);
         try{
             FileWriter file = new FileWriter("resources/saves/games.json");
@@ -157,7 +200,8 @@ public class Game {
                         "  Talk\n" +
                         "  Items \n" +
                         "  Inventory\n" +
-                        "  Map\n "
+                        "  Map\n " +
+                        "  Save"
         );
     }
 
@@ -188,7 +232,8 @@ public class Game {
         System.out.println(
                         "  Enter 1: To play \n" +
                         "  Enter 2: Leave the Game \n" +
-                        "  Enter 3: To Read the Instructions and then Play \n"
+                        "  Enter 3: To Read the Instructions and then Play \n" +
+                        "  Enter 4: Load \n"
         );
     }
 
