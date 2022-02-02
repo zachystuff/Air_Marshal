@@ -69,7 +69,7 @@ public class Game {
             activeRoom = loadedRoom;
             //set players inventory
             String itemString = (String) loadedData.get("inventory");
-            String[] arr = itemString.split("\\[|\\]|,| ");
+            String[] arr = itemString.split(", |\\[|\\]|,");
             List<Item> inventory = new ArrayList<>();
             for (String s : arr){
                 for (Item i : Item.values()){
@@ -147,6 +147,7 @@ public class Game {
         data.put("activeRoom", activeRoom);
         data.put("timeleft", timer.getCurrentTime());
         JSONObject newSaveData = new JSONObject();
+        System.out.println(data);
         newSaveData.put(player.getName(), data);
         try{
             FileWriter file = new FileWriter("resources/saves/games.json");
