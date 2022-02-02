@@ -17,30 +17,35 @@ import org.json.simple.parser.*;
 
 public class Game {
     private Player player = new Player();
-    private Prompter prompter = new Prompter(new Scanner(System.in));
+    private Scanner scanner = new Scanner(System.in);
+    private Prompter prompter = new Prompter(scanner);
     private String activeRoom = "commercial class";
     private VerbParser verbParser = new VerbParser();
     private GameTimeKeeper timer;
 
 
     public void execute() {
+        gameIntro();
         startGame();
     }
 
-    private void startGame() {
+    private void gameIntro() {
         // Reads game intro and instructions from data/json files at the beginning of the game
         try {
-            Files.readAllLines(Path.of("data/game_intro.txt")).forEach(System.out::println);
-            Files.readAllLines(Path.of("data/game_instructions.txt")).forEach(System.out::println);
+            Files.readAllLines(Path.of("resources/data/game_intro.txt")).forEach(System.out::println);
+            Files.readAllLines(Path.of("resources/data/game_instructions.txt")).forEach(System.out::println);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void startGame() {
         player.setName(prompter.prompt("What is your name? "));
         String test = prompter.prompt("Please enter yes if you want to play? ", "yes|y", "Invalid choice: enter yes to play");
         // player is prompted, typing "yes" or "y" allows them to enter the game
         if (test.equals("yes") || test.equals("y")) {
             System.out.println("Enjoy the game Air Marshal " + player.getName());
-            timer = new GameTimeKeeper();
+            timer = new GameTimeKeeper(player, scanner);
             MusicPlayer.controller();
             turnLoop();
         }
@@ -61,13 +66,17 @@ public class Game {
                     menu();
                 }
                 String choice = prompter.prompt("What would you like to do? ");
-
-                if (choice.equals("save")){
-                    saveGame();
-                    player.setPlaying(false);
+                if (timer.isTimeLeft()) {
+                    if (choice.equals("save")){
+                        saveGame();
+                        player.setPlaying(false);
+                    }
+                    else{
+                        activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
+                    }
                 }
-                else{
-                    activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
+                else {
+                    timer.gameOver(player, scanner);
                 }
 
                 // catch block because verbParser.parseVerb(...) uses a fileReader that requires exception handling
@@ -145,6 +154,15 @@ public class Game {
         );
     }
 
+    public void playAgain() {
+        String response = prompter.prompt("Do you want to play again? yes or no? ", "yes|no|y|n", "Invalid Choice");
+        if (response.equals("yes")|| response.equals("y")) {
+            startGame();
+        } else if (response.equals("no")|| response.equals("n")) {
+            System.out.println("Thank you for playing! Hope you will play again!");
+            System.exit(0);
+        }
+    }
 
 }
 
