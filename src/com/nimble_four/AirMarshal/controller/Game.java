@@ -80,7 +80,14 @@ public class Game {
             }
             player.setInventory(inventory);
             //Get time and parse it
-
+            String timeleft = (String) loadedData.get("timeleft");
+            int hour = Integer.parseInt(timeleft.substring(0,1)) * 60;
+            int min = Integer.parseInt(timeleft.substring(2,4));
+            int sum = min + hour;
+            //kick off game with saved data
+            timer = new GameTimeKeeper(player, scanner, sum);
+            MusicPlayer.controller();
+            turnLoop();
         } catch(Exception e){
             System.out.println("ERROR: " + e.getMessage());
         }
@@ -174,7 +181,8 @@ public class Game {
                         "  Talk\n" +
                         "  Items \n" +
                         "  Inventory\n" +
-                        "  Map\n "
+                        "  Map\n " +
+                        "  Save"
         );
     }
 

@@ -46,6 +46,27 @@ public class GameTimeKeeper extends Timer {
         }, 0, 1000);
     }
 
+
+    public GameTimeKeeper(Player player, Scanner scanner, int timeremaining){
+        timer.scheduleAtFixedRate(new TimerTask() {
+            int i = timeremaining;
+            int displayMinutes;
+            int displaySeconds;
+            DecimalFormat formatter = new DecimalFormat("00");
+            String secondsFormatted;
+            public void run() {
+                displayMinutes = (i / 60) % 60;
+                displaySeconds = i % 60;
+                secondsFormatted = formatter.format(displaySeconds);
+                i--;
+                currentTime = displayMinutes + ":" + secondsFormatted + " left";
+                if (i< 0) {
+                    setTimeLeft(false);
+                    timer.cancel();
+                }
+            }
+        }, 0, 1000);
+    }
     public String getCurrentTime() {
         return currentTime;
     }
