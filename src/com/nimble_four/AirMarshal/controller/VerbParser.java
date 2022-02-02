@@ -195,33 +195,36 @@ public class VerbParser {
     private static class ItemHandler {
         private static void handleItems(JSONObject currentRoomData, Player player) {
             JSONArray itemsArray = (JSONArray) currentRoomData.get("items"); // converts the JSON to a JSONARRAY
-            // If the room has items ie all the items in the room haven't yet been Picked up
-            if (itemsArray.size() != 0) {
+                // If the room has items ie all the items in the room haven't yet been Picked up
+                if (itemsArray.size() != 0) {
 //                System.out.println(currentRoomData.get("items"));
-                displayItems(itemsArray);
-                String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
-                String item = itemSelected.replace(" ", "_");
-                // Checks if the item entered by user is valid ie is in that specific room
-                boolean isValidItem = itemsArray.stream().anyMatch(it -> it.equals(itemSelected.toLowerCase()));
+                    displayItems(itemsArray);
+                    String dropItem = prompter.prompt("Would you like to add any items to your inventory, yes or no?", "yes|y|no","Invalid entry, please enter yes or no");
+                    if (dropItem.equals("yes") || dropItem.equals("y")) {
+                        String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
+                        String item = itemSelected.replace(" ", "_");
+                        // Checks if the item entered by user is valid ie is in that specific room
+                        boolean isValidItem = itemsArray.stream().anyMatch(it -> it.equals(itemSelected.toLowerCase()));
 
-                if (isValidItem) {
-                    // checks if item is already in our inventory
-                    if (player.getInventory().contains(Item.valueOf(item))) {
-                        System.out.println("Item was already added to inventory, Try selecting a different item");
-                    } else {
-                        // Once an item is picked up, it is removed from the room
-                        Object itemz = (Object) itemSelected.toLowerCase();
-                        itemsArray.remove(itemz);
-                        // Added to players inventory
-                        player.addToInventory(Item.valueOf(item));
-                        System.out.println("Item successfully added");
+                        if (isValidItem) {
+                            // checks if item is already in our inventory
+                            if (player.getInventory().contains(Item.valueOf(item))) {
+                                System.out.println("Item was already added to inventory, Try selecting a different item");
+                            } else {
+                                // Once an item is picked up, it is removed from the room
+                                Object itemz = (Object) itemSelected.toLowerCase();
+                                itemsArray.remove(itemz);
+                                // Added to players inventory
+                                player.addToInventory(Item.valueOf(item));
+                                System.out.println("Item successfully added");
+                            }
+                        } else {
+                            System.out.println("You entered an Invalid item");
+                        }
                     }
                 } else {
-                    System.out.println("You entered an Invalid item");
+                    System.out.println("No items left, You've picked up all the items in the room");
                 }
-            } else {
-                System.out.println("No items left, You've picked up all the items in the room");
-            }
             String command = prompter.prompt("Enter to exit");
         }
 
@@ -245,7 +248,7 @@ public class VerbParser {
                 System.out.println("You don't have any items in your inventory");
             } else {
                 player.displayInventory();
-                String dropItem = prompter.prompt("Would you like to drop any items in your inventory, yes or no?");
+                String dropItem = prompter.prompt("Would you like to drop any items in your inventory, yes or no?", "yes|y|no","Invalid entry, please enter yes or no");
                 if (dropItem.equals("yes") || dropItem.equals("y")) {
                     String itemSelected = prompter.prompt("Which of the above items would you like to drop from your inventory?");
                     System.out.println(deletedFromInventory(currentRoomData, player, itemSelected));
@@ -261,7 +264,7 @@ public class VerbParser {
             if (itemExistOnAirCraft) {
                 String item = itemSelected.replace(" ", "_").toUpperCase();
                 String isDeleted = player.dropItem(Item.valueOf(item)) ? itemSelected
-                        + " has been successfully deleted" : itemSelected + " doesn't exist in your inventory";
+                        + " has been successfully removed" : itemSelected + " doesn't exist in your inventory";
 
                 JSONArray itemsArray = (JSONArray) currentRoomData.get("items"); // converts the JSON to a JSONARRAY
                 // Once an item is picked up, it is removed from the room
