@@ -3,6 +3,7 @@ import com.apps.util.Console;
 import com.apps.util.Prompter;
 import com.nimble_four.AirMarshal.Item;
 import com.nimble_four.AirMarshal.Player;
+import com.nimble_four.AirMarshal.music.MusicPlayer;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class Game {
         if (test.equals("yes") || test.equals("y")) {
             System.out.println("Enjoy the game Air Marshal " + player.getName());
             timer = new GameTimeKeeper();
+            MusicPlayer.controller();
             turnLoop();
         }
     }
@@ -112,7 +114,7 @@ public class Game {
                         "  Move\n" +
                         "  Talk\n" +
                         "  Items \n" +
-                        "  Inventory\n " +
+                        "  Inventory\n" +
                         "  Save"
         );
     }
