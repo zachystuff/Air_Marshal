@@ -5,13 +5,18 @@ import com.nimble_four.AirMarshal.Item;
 import com.nimble_four.AirMarshal.Player;
 import com.nimble_four.AirMarshal.music.MusicPlayer;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
@@ -41,7 +46,7 @@ public class Game {
 
     private void startGame() {
         player.setName(prompter.prompt("What is your name? "));
-        String test = prompter.prompt("Please enter yes if you want to play? ", "yes|y", "Invalid choice: enter yes to play");
+        String test = prompter.prompt("Please enter yes if you want to play or load to load a game ", "yes|y|l|load", "Invalid choice: enter yes to play or load to load");
         // player is prompted, typing "yes" or "y" allows them to enter the game
         if (test.equals("yes") || test.equals("y")) {
             System.out.println("Enjoy the game Air Marshal " + player.getName());
@@ -49,6 +54,37 @@ public class Game {
             MusicPlayer.controller();
             turnLoop();
         }
+        if(test.equals("l") || test.equals("load")){
+            loadGame(player.getName());
+        }
+    }
+
+    private void loadGame(String name) {
+        try{
+            System.out.println("Loading game for " + name);
+            JSONObject loadedFile = (JSONObject) new JSONParser().parse(new FileReader("resources/saves/games.json")); //the entire data file
+            JSONObject loadedData = (JSONObject) loadedFile.get(name); // this is the user's specific data
+            //Load room
+            String loadedRoom = (String) loadedData.get("activeRoom");
+            activeRoom = loadedRoom;
+            //set players inventory
+            String itemString = (String) loadedData.get("inventory");
+            String[] arr = itemString.split("\\[|\\]|,| ");
+            List<Item> inventory = new ArrayList<>();
+            for (String s : arr){
+                for (Item i : Item.values()){
+                    if(i.getName().equals(s)){
+                        inventory.add(i);
+                    }
+                }
+            }
+            player.setInventory(inventory);
+            //Get time and parse it
+
+        } catch(Exception e){
+            System.out.println("ERROR: " + e.getMessage());
+        }
+
     }
 
     private void turnLoop() {
@@ -99,8 +135,8 @@ public class Game {
         System.out.println("PLAYER INVENTORY:" + player.getInventory()); //2
         System.out.println("ACTIVE ROOM:" + activeRoom); //3
         System.out.println("CURRENT TIME LEFT" + timer.getCurrentTime()); //4
-        HashMap<String,Object> data = new HashMap<>();
-        data.put("inventory", player.getInventory());
+        JSONObject data = new JSONObject();
+        data.put("inventory", player.getInventory().toString());
         data.put("activeRoom", activeRoom);
         data.put("timeleft", timer.getCurrentTime());
         JSONObject newSaveData = new JSONObject();
