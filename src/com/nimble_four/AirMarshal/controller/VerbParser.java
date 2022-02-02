@@ -119,6 +119,8 @@ public class VerbParser {
 
         static String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms, Player player) throws IOException, ParseException {
             System.out.println(currentRoomData.get("directions"));
+            String dropItem = prompter.prompt("Would you like to leave the room, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
+            if (dropItem.equals("yes") || dropItem.equals("y")) {
             String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|backwards|forward",
                     "Invalid direction chosen.");
             JSONObject directions = (JSONObject) currentRoomData.get("directions");
@@ -129,7 +131,7 @@ public class VerbParser {
                 System.out.println(allRooms.get(activeRoom));
                 return activeRoom;
             }
-            ;
+        }
             return activeRoom;
         }
 
@@ -199,7 +201,7 @@ public class VerbParser {
                 if (itemsArray.size() != 0) {
 //                System.out.println(currentRoomData.get("items"));
                     displayItems(itemsArray);
-                    String dropItem = prompter.prompt("Would you like to add any items to your inventory, yes or no?", "yes|y|no","Invalid entry, please enter yes or no");
+                    String dropItem = prompter.prompt("Would you like to add any items to your inventory, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
                     if (dropItem.equals("yes") || dropItem.equals("y")) {
                         String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
                         String item = itemSelected.replace(" ", "_");
@@ -248,7 +250,7 @@ public class VerbParser {
                 System.out.println("You don't have any items in your inventory");
             } else {
                 player.displayInventory();
-                String dropItem = prompter.prompt("Would you like to drop any items in your inventory, yes or no?", "yes|y|no","Invalid entry, please enter yes or no");
+                String dropItem = prompter.prompt("Would you like to drop any items in your inventory, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
                 if (dropItem.equals("yes") || dropItem.equals("y")) {
                     String itemSelected = prompter.prompt("Which of the above items would you like to drop from your inventory?");
                     System.out.println(deletedFromInventory(currentRoomData, player, itemSelected));
