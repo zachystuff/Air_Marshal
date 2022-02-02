@@ -28,8 +28,8 @@ As you stare around you start looking in your pockets, in them you find a badge 
 
 Upon further inspection of the phone you notice there is an unread message. You read the message and it  says:
     "We have received intel that a crime will be committed before the flight lands.
-     It is up to you to stop this from happening.
-     To stop this from happening you have to gather information from the passengers and look for evidence
+     It is up to you to stop this form happening.
+     To stop this from happening you have to gather information from the passengers or crew, and look for evidence
      that will help you to uncover who is the criminal. "
 
 In your foggy mind you remember you are an Air Marshal and it is your duty to protect the passengers of the flight.
