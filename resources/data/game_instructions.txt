@@ -8,7 +8,7 @@
 
 Your mission, as the Air Marshal, is to keep the flight passengers safe. In order to do so you have to determine who
 is the criminal. To help you achieve this you will have to go around the plane, to talk to the passengers and crew,
-and gather clues.
+and gather items.
 
 To play the game you will be prompted with what do you what to do. Your options are:
 
