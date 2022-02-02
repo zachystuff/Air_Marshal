@@ -215,7 +215,6 @@ public class VerbParser {
                         // Added to players inventory
                         player.addToInventory(Item.valueOf(item));
                         System.out.println("Item successfully added");
-                        System.out.println("You currently have: \r" + player.getInventory());
                     }
                 } else {
                     System.out.println("You entered an Invalid item");
@@ -223,7 +222,7 @@ public class VerbParser {
             } else {
                 System.out.println("No items left, You've picked up all the items in the room");
             }
-
+            String command = prompter.prompt("Enter to exit");
         }
 
         // method that generates a list of the items into a more readable format
@@ -252,6 +251,7 @@ public class VerbParser {
                     System.out.println(deletedFromInventory(currentRoomData, player, itemSelected));
                 }
             }
+            String command = prompter.prompt("Enter to exit");
         }
 
         //            MAKING SURE USER INPUT IS A VALID ENUM
@@ -289,6 +289,7 @@ public class VerbParser {
         private static void handleMap (String activeRoom) {
             try {
                 Files.readAllLines(Path.of("resources/maps/" + activeRoom +".txt")).forEach(System.out::println);
+                String command = prompter.prompt("Enter to exit");
             } catch (IOException e) {
                 e.printStackTrace();
             }
