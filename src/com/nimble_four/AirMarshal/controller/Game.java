@@ -32,25 +32,42 @@ public class Game {
     private void gameIntro() {
         // Reads game intro and instructions from data/json files at the beginning of the game
         try {
+            Files.readAllLines(Path.of("resources/data/game_banner.txt")).forEach(System.out::println);
+            Thread.sleep(2000);
+            Console.clear();
             Files.readAllLines(Path.of("resources/data/game_intro.txt")).forEach(System.out::println);
-            Files.readAllLines(Path.of("resources/data/game_instructions.txt")).forEach(System.out::println);
-        } catch (IOException e) {
+            Thread.sleep(5000);
+            String move = prompter.prompt("Enter to continue");
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     private void startGame() {
-        player.setName(prompter.prompt("What is your name? "));
-        String test = prompter.prompt("Please enter yes if you want to play? ", "yes|y", "Invalid choice: enter yes to play");
-        // player is prompted, typing "yes" or "y" allows them to enter the game
-        if (test.equals("yes") || test.equals("y")) {
-            System.out.println("Enjoy the game Air Marshal " + player.getName());
-
-            timer = new GameTimeKeeper(player, scanner);
-            MusicPlayer.controller();
-
-            turnLoop();
+        Console.clear();
+        // player is prompted with play game menu options
+        playGameOptions();
+        String choice = prompter.prompt("Please enter your choice: ", "1|2|3", "Invalid choice: enter 1, 2, or 3");
+        if(Integer.parseInt(choice) == 2) {
+            System.out.println("Hope you will come back again!");
+            System.exit(0);
         }
+        if (Integer.parseInt(choice) == 3) {
+            // Reads game instructions from data/json if player chooses to from the play game menu
+            try {
+                Files.readAllLines(Path.of("resources/data/game_instructions.txt")).forEach(System.out::println);
+                String move = prompter.prompt("Enter to continue");
+                Console.clear();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        player.setName(prompter.prompt("What is your name? "));
+        System.out.println("Enjoy the game Air Marshal " + player.getName());
+
+        timer = new GameTimeKeeper(player, scanner);
+        MusicPlayer.controller();
+        turnLoop();
     }
 
     private void turnLoop() {
@@ -164,6 +181,15 @@ public class Game {
             System.out.println("Thank you for playing! Hope you will play again!");
             System.exit(0);
         }
+    }
+
+    public void playGameOptions(){
+        System.out.println("-- Play Game Options --");
+        System.out.println(
+                        "  Enter 1: To play \n" +
+                        "  Enter 2: Leave the Game \n" +
+                        "  Enter 3: To Read the Instructions and then Play \n"
+        );
     }
 
 }

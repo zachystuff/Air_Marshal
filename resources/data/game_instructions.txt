@@ -18,8 +18,7 @@ To play the game you will be prompted with what do you what to do. Your options 
           the people you can interact with. Enter the person you want to talk to and see what they have to say.
 3. Items - this will allow you to see the items that are in the room and the player will be prompted
            to select which item to collect
-4. Inventory - this will display the items the player has collected - "under development"
-5. Journal - this will display all the clues the player has collected - "under development"
-6. Help - "under development"
+4. Inventory - this will display the items the player has collected
+5. Help - "under development"
 
 To win the game you, as the Air Marshal, have to guess who the criminal is.
