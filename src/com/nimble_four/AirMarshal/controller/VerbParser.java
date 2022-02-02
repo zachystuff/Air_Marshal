@@ -119,8 +119,8 @@ public class VerbParser {
 
         static String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms, Player player) throws IOException, ParseException {
             System.out.println(currentRoomData.get("directions"));
-            String dropItem = prompter.prompt("Would you like to leave the room, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
-            if (dropItem.equals("yes") || dropItem.equals("y")) {
+            String leaveRoom = prompter.prompt("Would you like to leave the room, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
+            if (leaveRoom.equals("yes") || leaveRoom.equals("y")) {
             String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|backwards|forward",
                     "Invalid direction chosen.");
             JSONObject directions = (JSONObject) currentRoomData.get("directions");
@@ -201,8 +201,8 @@ public class VerbParser {
                 if (itemsArray.size() != 0) {
 //                System.out.println(currentRoomData.get("items"));
                     displayItems(itemsArray);
-                    String dropItem = prompter.prompt("Would you like to add any items to your inventory, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
-                    if (dropItem.equals("yes") || dropItem.equals("y")) {
+                    String addItem = prompter.prompt("Would you like to add any items to your inventory, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
+                    if (addItem.equals("yes") || addItem.equals("y")) {
                         String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
                         String item = itemSelected.replace(" ", "_");
                         // Checks if the item entered by user is valid ie is in that specific room
