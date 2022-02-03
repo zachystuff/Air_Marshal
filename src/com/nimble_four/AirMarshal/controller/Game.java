@@ -63,16 +63,17 @@ public class Game {
                 e.printStackTrace();
             }
         }
-  if(Integer.parseInt(choice) == 4){
-      player.setName(prompter.prompt("What is your name? "));
-      loadGame(player.getName());
-  }
-        player.setName(prompter.prompt("What is your name? "));
-        System.out.println("Enjoy the game Air Marshal " + player.getName());
-
-        timer = new GameTimeKeeper(player, scanner);
-        MusicPlayer.controller();
-        turnLoop();
+        if(Integer.parseInt(choice) == 4){
+            player.setName(prompter.prompt("What is your name? "));
+            loadGame(player.getName());
+        }
+        else if(Integer.parseInt(choice) == 1){
+            player.setName(prompter.prompt("What is your name? "));
+            System.out.println("Enjoy the game Air Marshal " + player.getName());
+            timer = new GameTimeKeeper(player, scanner);
+            MusicPlayer.controller();
+            turnLoop();
+        }
     }
 
     private void loadGame(String name) {
@@ -105,7 +106,8 @@ public class Game {
             MusicPlayer.controller();
             turnLoop();
         } catch(Exception e){
-            System.out.println("ERROR: " + e.getMessage());
+            System.out.println("ERROR: Could not locate your save file");
+            startGame();
         }
  }
 
