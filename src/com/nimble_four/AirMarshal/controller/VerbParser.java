@@ -203,6 +203,7 @@ public class VerbParser {
             }
             JSONObject characterDialogue = (JSONObject) characterDialogueData;
             System.out.println(characterDialogue.get(characterChoice));
+            String command = prompter.prompt("Enter to exit");
         }
 
         private static JSONObject getCharacterDialogueData() throws IOException, ParseException {
