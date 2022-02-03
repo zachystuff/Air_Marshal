@@ -8,15 +8,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
@@ -27,7 +23,6 @@ public class Game {
     private String activeRoom = "commercial class";
     private VerbParser verbParser = new VerbParser();
     private GameTimeKeeper timer;
-
 
     public void execute() {
         gameIntro();
@@ -67,21 +62,23 @@ public class Game {
                 e.printStackTrace();
             }
         }
-  if(Integer.parseInt(choice) == 4){
-      player.setName(prompter.prompt("What is your name? "));
-      loadGame(player.getName());
-  }
-        player.setName(prompter.prompt("What is your name? "));
-        System.out.println("Enjoy the game Air Marshal " + player.getName());
-
-        timer = new GameTimeKeeper(player, scanner);
-        MusicPlayer.controller();
-        turnLoop();
+        if(Integer.parseInt(choice) == 4){
+            player.setName(prompter.prompt("What is your name? "));
+            loadGame(player.getName());
+        }
+        else if(Integer.parseInt(choice) == 1){
+            player.setName(prompter.prompt("What is your name? "));
+            System.out.println("Enjoy the game Air Marshal " + player.getName());
+            timer = GameTimeKeeper.getInstance(player, scanner);
+            MusicPlayer.controller();
+            turnLoop();
+        }
     }
- private void loadGame(String name) {
+
+    private void loadGame(String name) {
         try{
             System.out.println("Loading game for " + name);
-            JSONObject loadedFile = (JSONObject) new JSONParser().parse(new FileReader("resources/saves/games.json")); //the entire data file
+            JSONObject loadedFile = (JSONObject) new JSONParser().parse(new FileReader("resources/saves/"+name+".json")); //the entire data file
             JSONObject loadedData = (JSONObject) loadedFile.get(name); // this is the user's specific data
             //Load room
             String loadedRoom = (String) loadedData.get("activeRoom");
@@ -104,11 +101,12 @@ public class Game {
             int min = Integer.parseInt(timeleft.substring(2,4));
             int sum = min + hour;
             //kick off game with saved data
-            timer = new GameTimeKeeper(player, scanner, sum);
+            timer = GameTimeKeeper.getInstance(player, scanner, sum);
             MusicPlayer.controller();
             turnLoop();
         } catch(Exception e){
-            System.out.println("ERROR: " + e.getMessage());
+            System.out.println("ERROR: Could not locate your save file");
+            startGame();
         }
  }
 
@@ -130,7 +128,6 @@ public class Game {
                 if (timer.isTimeLeft()) {
                     if (choice.equals("save")){
                         saveGame();
-                        player.setPlaying(false);
                     }
                     else{
                         activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
@@ -155,23 +152,18 @@ public class Game {
      * Then write data to JSON file (resources/saves/games.json). Key for JSON will be players name(?)
      */
     private void saveGame() {
-        System.out.println("SAVE THE GAME NOW!");
-        System.out.println("PLAYERS NAME: " + player.getName()); //1
-        System.out.println("PLAYER INVENTORY:" + player.getInventory()); //2
-        System.out.println("ACTIVE ROOM:" + activeRoom); //3
-        System.out.println("CURRENT TIME LEFT" + timer.getCurrentTime()); //4
         JSONObject data = new JSONObject();
         data.put("inventory", player.getInventory().toString());
         data.put("activeRoom", activeRoom);
         data.put("timeleft", timer.getCurrentTime());
         JSONObject newSaveData = new JSONObject();
-        System.out.println(data);
         newSaveData.put(player.getName(), data);
         try{
-            FileWriter file = new FileWriter("resources/saves/games.json");
+            FileWriter file = new FileWriter("resources/saves/"+player.getName()+".json");
             file.write(newSaveData.toJSONString());
             file.close();
             System.out.println("File Saved!");
+            String move = prompter.prompt("Enter to continue");
         }catch (IOException e){
             System.out.println(e.getLocalizedMessage());
         }
