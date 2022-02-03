@@ -121,8 +121,15 @@ public class VerbParser {
             displayDirections(directions);
             String leaveRoom = prompter.prompt("Would you like to leave the room, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
             if (leaveRoom.equals("yes") || leaveRoom.equals("y")) {
-            String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|backwards|forward",
-                    "Invalid direction chosen.");
+            String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|back|forward",
+                    "Invalid direction option chosen.");
+                //check if its valid direction for the current room
+                if(directions.containsKey(directionChoice)) {
+                    System.out.println("Moving to requested direction");
+                } else {
+                    System.out.println("Can not move that direction from this room");
+                    return activeRoom;
+                }
             //checks to see if player has the item needed to enter room they are trying to
             if (authorizePlayerToEnter((String) directions.get(directionChoice), player)) {
                 //only change the active room if authorization to enter
