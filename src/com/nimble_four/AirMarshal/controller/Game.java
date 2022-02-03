@@ -129,7 +129,6 @@ public class Game {
                 if (timer.isTimeLeft()) {
                     if (choice.equals("save")){
                         saveGame();
-                        player.setPlaying(false);
                     }
                     else{
                         activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
@@ -159,13 +158,13 @@ public class Game {
         data.put("activeRoom", activeRoom);
         data.put("timeleft", timer.getCurrentTime());
         JSONObject newSaveData = new JSONObject();
-        System.out.println(data);
         newSaveData.put(player.getName(), data);
         try{
             FileWriter file = new FileWriter("resources/saves/"+player.getName()+".json");
             file.write(newSaveData.toJSONString());
             file.close();
             System.out.println("File Saved!");
+            String move = prompter.prompt("Enter to continue");
         }catch (IOException e){
             System.out.println(e.getLocalizedMessage());
         }
