@@ -71,10 +71,5 @@ public class VerbParserTest extends TestCase {
         assertEquals(parser.findChoiceSynonyms("iNVEntory"), none);
     }
 
-    // ---- GETROOMDATA ----
-    @Test
-    public void testGetRoomData_shouldReturnJSONObject() throws Exception{
-        assertTrue(parser.getRoomData() instanceof JSONObject);
-    }
 
 }
