@@ -149,7 +149,7 @@ public class Game {
     }
     /*
      * to save we need 1. Player name 2. Player inventory 3. Current activeRoom 4. Current time left in game.
-     * Then write data to JSON file (resources/saves/games.json). Key for JSON will be players name(?)
+     * Then write data to JSON file (resources/saves/{name}.json). Key for JSON will be players name(?)
      */
     private void saveGame() {
         JSONObject data = new JSONObject();
