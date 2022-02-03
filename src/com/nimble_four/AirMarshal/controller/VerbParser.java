@@ -60,7 +60,6 @@ public class VerbParser {
 
         if (roomData == null) {
             roomData = new JSONParser().parse(new FileReader("resources/room_data.json"));
-            System.out.println("ROOMDATA INSTIANTED");
         }
 
         //NOTE: "resources/room_data.json" can be edited to change in game items, characters, etc.
@@ -118,12 +117,12 @@ public class VerbParser {
     private static class CharacterMover {
 
         static String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms, Player player) throws IOException, ParseException {
-            System.out.println(currentRoomData.get("directions"));
+            JSONObject directions = (JSONObject) currentRoomData.get("directions");
+            displayDirections(directions);
             String leaveRoom = prompter.prompt("Would you like to leave the room, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
             if (leaveRoom.equals("yes") || leaveRoom.equals("y")) {
             String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|backwards|forward",
                     "Invalid direction chosen.");
-            JSONObject directions = (JSONObject) currentRoomData.get("directions");
             //checks to see if player has the item needed to enter room they are trying to
             if (authorizePlayerToEnter((String) directions.get(directionChoice), player)) {
                 //only change the active room if authorization to enter
@@ -164,6 +163,15 @@ public class VerbParser {
                     System.out.println(closedGateDialogue.get(directionChoice));
                     return false;
             }
+        }
+
+        static void displayDirections(JSONObject directions){
+            String leftAlignFormat = "| %-15s | %-17s |%n";
+            System.out.format("\u001B[36m" + "*-----------------+-------------------*%n");
+            System.out.format("| Direction       | Room              |%n");
+            System.out.format("+-----------------+-------------------+%n");
+            directions.forEach((key,value) -> System.out.format(leftAlignFormat,key, value));
+            System.out.format("*-----------------+-------------------*%n" + "\u001B[0m");
         }
     }
 
