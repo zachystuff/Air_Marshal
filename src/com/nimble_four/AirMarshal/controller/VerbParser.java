@@ -27,6 +27,7 @@ public class VerbParser {
     //every choice the player makes passes through here. Then delegates the task to function calls.
     //Functions calls should be abstracted out to a class to handle specific verb
     public String parseVerb(String choice, String activeRoom, Player player) throws IOException, ParseException {
+
         JSONObject allRooms = getRoomData();  //read in from resources/room_data.json
         JSONObject currentRoomData = (JSONObject) allRooms.get(activeRoom);
 
@@ -53,30 +54,27 @@ public class VerbParser {
                 break;
         }
         return activeRoom;
+
     }
 
     //reads in data for use in game
-    private JSONObject getRoomData() throws IOException, ParseException {
-
+    //public to test
+    public JSONObject getRoomData() throws IOException, ParseException {
         if (roomData == null) {
             roomData = new JSONParser().parse(new FileReader("resources/room_data.json"));
         }
 
         //NOTE: "resources/room_data.json" can be edited to change in game items, characters, etc.
-
         JSONObject room = (JSONObject) roomData;
         JSONObject rooms = (JSONObject) room.get("rooms");
         return rooms;
     }
 
-    private JSONObject getCharacterDialogueData() throws IOException, ParseException {
-        JSONObject characterDialogueData = (JSONObject) new JSONParser().parse(new FileReader("resources/character_dialogue.json"));
-        return characterDialogueData;
-    }
+
 
     //funnels player input into 1 of 6 possibilities: move, talk, items, inventory, map, or "invalid entry"
-
-    private String findChoiceSynonyms(String choice) {
+    //Made public for testing
+    public String findChoiceSynonyms(String choice) {
         //allows multiple verbs inputted by the user to trigger 'synonym' of in-game action
         String[] moveSynonyms = {"move", "walk", "run", "change room", "move room"};
         String[] talkSynonyms = {"talk", "speak", "converse", "chat", "interact"};
@@ -190,7 +188,7 @@ public class VerbParser {
                     return;
                 }
             }
-            JSONObject characterDialogue = (JSONObject) characterDialogueData;
+            JSONObject characterDialogue = (JSONObject) characterDialogueData; //this might be redundant
             System.out.println(characterDialogue.get(characterChoice));
         }
 
