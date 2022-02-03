@@ -24,7 +24,6 @@ public class Game {
     private VerbParser verbParser = new VerbParser();
     private GameTimeKeeper timer;
 
-
     public void execute() {
         gameIntro();
         startGame();
@@ -70,7 +69,7 @@ public class Game {
         else if(Integer.parseInt(choice) == 1){
             player.setName(prompter.prompt("What is your name? "));
             System.out.println("Enjoy the game Air Marshal " + player.getName());
-            timer = new GameTimeKeeper(player, scanner);
+            timer = GameTimeKeeper.getInstance(player, scanner);
             MusicPlayer.controller();
             turnLoop();
         }
@@ -102,7 +101,7 @@ public class Game {
             int min = Integer.parseInt(timeleft.substring(2,4));
             int sum = min + hour;
             //kick off game with saved data
-            timer = new GameTimeKeeper(player, scanner, sum);
+            timer = GameTimeKeeper.getInstance(player, scanner, sum);
             MusicPlayer.controller();
             turnLoop();
         } catch(Exception e){
