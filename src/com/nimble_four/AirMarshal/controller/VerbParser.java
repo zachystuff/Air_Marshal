@@ -120,12 +120,12 @@ public class VerbParser {
             String leaveRoom = prompter.prompt("Would you like to leave the room, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
             if (leaveRoom.equals("yes") || leaveRoom.equals("y")) {
             String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|back|forward",
-                    "Invalid direction option chosen.");
+                    "Please enter a valid direction option.");
                 //check if its valid direction for the current room
                 if(directions.containsKey(directionChoice)) {
-                    System.out.println("Moving to requested direction");
+                    System.out.println("Moving to the requested direction " + directionChoice);
                 } else {
-                    System.out.println("Can not move that direction from this room");
+                    System.out.println("Invalid direction. Can not move " + directionChoice + " from this room.");
                     return activeRoom;
                 }
             //checks to see if player has the item needed to enter room they are trying to
@@ -174,22 +174,34 @@ public class VerbParser {
     private static class ConversationHandler {
         private static void talkToCharacters(JSONObject currentRoomData, Player player) throws IOException, ParseException {
             formatter.displaySingleTable((JSONArray) currentRoomData.get("characters"),"\u001B[31m","CHARACTERS");
-
+            JSONArray characters = (JSONArray) currentRoomData.get("characters");
             JSONObject characterDialogueData = getCharacterDialogueData();
+            if(((JSONArray) currentRoomData.get("characters")).isEmpty()){
+                System.out.println("There are no characters in this room to talk to!");
+                return;
+            }
             String characterChoice = prompter.prompt("Who would you like to talk to?");
-            if (characterChoice.equals("stewardess")) {
-                //this is how game ends
-                if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)) {
-                    //NOTE: endgame dialogue can be edited in "resources/endgame.json"
-                    JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
-                    System.out.println(endGameDialogue.get("end"));
-                    player.setPlaying(false); //set isPlaying to "false" to break the game loop
-                    new Game().playAgain();
-                    return;
+            if (characters.contains(characterChoice)) {
+                System.out.println("Valid character for the room");
+                if (characterChoice.equals("stewardess")) {
+                    //this is how game ends
+                    if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)) {
+                        //NOTE: endgame dialogue can be edited in "resources/endgame.json"
+                        JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
+                        System.out.println(endGameDialogue.get("end"));
+                        player.setPlaying(false); //set isPlaying to "false" to break the game loop
+
+                        new Game().playAgain();
+                        return;
+                    }
                 }
+            } else {
+                System.out.println("Not a valid name or character is in another room");
+                return;
             }
             JSONObject characterDialogue = (JSONObject) characterDialogueData; //this might be redundant
             System.out.println(characterDialogue.get(characterChoice));
+            String command = prompter.prompt("Enter to exit");
         }
 
         private static JSONObject getCharacterDialogueData() throws IOException, ParseException {

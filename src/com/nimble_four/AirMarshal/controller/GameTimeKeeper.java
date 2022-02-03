@@ -100,6 +100,7 @@ public class GameTimeKeeper extends Timer {
 
         System.out.println("\nAir Marshal " + player.getName() + gameOverDialogue.get("game over"));
         player.setPlaying(false);
+        timeKeeper = null;
         new Game().playAgain();
     }
 }
