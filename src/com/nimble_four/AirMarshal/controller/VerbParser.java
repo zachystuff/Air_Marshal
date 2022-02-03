@@ -176,23 +176,30 @@ public class VerbParser {
     private static class ConversationHandler {
         private static void talkToCharacters(JSONObject currentRoomData, Player player) throws IOException, ParseException {
             formatter.displaySingleTable((JSONArray) currentRoomData.get("characters"),"\u001B[31m","CHARACTERS");
-
+            JSONArray characters = (JSONArray) currentRoomData.get("characters");
             JSONObject characterDialogueData = getCharacterDialogueData();
             if(((JSONArray) currentRoomData.get("characters")).isEmpty()){
                 System.out.println("There are no characters in this room to talk to!");
                 return;
             }
             String characterChoice = prompter.prompt("Who would you like to talk to?");
-            if (characterChoice.equals("stewardess")) {
-                //this is how game ends
-                if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)) {
-                    //NOTE: endgame dialogue can be edited in "resources/endgame.json"
-                    JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
-                    System.out.println(endGameDialogue.get("end"));
-                    player.setPlaying(false); //set isPlaying to "false" to break the game loop
-                    new Game().playAgain();
-                    return;
+            if (characters.contains(characterChoice)) {
+                System.out.println("Valid character for the room");
+                if (characterChoice.equals("stewardess")) {
+                    //this is how game ends
+                    if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)) {
+                        //NOTE: endgame dialogue can be edited in "resources/endgame.json"
+                        JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
+                        System.out.println(endGameDialogue.get("end"));
+                        player.setPlaying(false); //set isPlaying to "false" to break the game loop
+
+                        new Game().playAgain();
+                        return;
+                    }
                 }
+            } else {
+                System.out.println("Not a valid name or character is in another room");
+                return;
             }
             JSONObject characterDialogue = (JSONObject) characterDialogueData;
             System.out.println(characterDialogue.get(characterChoice));
