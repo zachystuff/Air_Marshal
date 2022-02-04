@@ -6,6 +6,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.Scanner;
 import java.util.Timer;
@@ -13,7 +15,7 @@ import java.util.TimerTask;
 public class GameTimeKeeper extends Timer {
     private Timer timer = new Timer();
     private String currentTime = "3:20";
-    private static GameTimeKeeper timeKeeper = null;
+    static GameTimeKeeper timeKeeper = null;
     private boolean timeLeft = true;
 
     // ---- CONSTRUCTORS ----
@@ -93,7 +95,7 @@ public class GameTimeKeeper extends Timer {
         JSONObject gameOverDialogue = null;
         try {
             gameOverDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
-
+            Files.readAllLines(Path.of("resources/data/game_over.txt")).forEach(System.out::println);
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }

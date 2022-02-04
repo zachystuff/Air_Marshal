@@ -58,6 +58,7 @@ public class Game {
                 Files.readAllLines(Path.of("resources/data/game_instructions.txt")).forEach(System.out::println);
                 String move = prompter.prompt("Enter to continue");
                 Console.clear();
+                startGame();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -224,7 +225,7 @@ public class Game {
         System.out.println(
                         "  Enter 1: To play \n" +
                         "  Enter 2: Leave the Game \n" +
-                        "  Enter 3: To Read the Instructions and then Play \n" +
+                        "  Enter 3: To Read the Instructions \n" +
                         "  Enter 4: Load \n"
         );
     }
