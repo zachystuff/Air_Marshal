@@ -159,7 +159,7 @@ public class Game {
                         "  Music\n" +
                         "  Quit\n"
         );
-        String choice = prompter.prompt("Type an option");
+        String choice = prompter.prompt("Type an option", "music|Music|options|Options", "Please enter a valid option");
         switch(choice.toLowerCase()){
             case "quit":
                 quitGame();

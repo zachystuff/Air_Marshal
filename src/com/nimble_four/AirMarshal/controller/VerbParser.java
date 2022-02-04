@@ -82,6 +82,8 @@ public class VerbParser {
         String[] inventorySynonyms = {"inventory", "check inventory", "view inventory", "Inventory"};
         String[] mapSynonyms = {"map", "view map", "check map", "Map"};
 
+        choice = choice.toLowerCase(); //case insensitive
+
         for (String word : moveSynonyms) {
             if (word.equals(choice)) {
                 return "move";
@@ -118,7 +120,7 @@ public class VerbParser {
             JSONObject directions = (JSONObject) currentRoomData.get("directions");
             displayDirections(directions);
             String leaveRoom = prompter.prompt("Would you like to leave the room, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
-            if (leaveRoom.equals("yes") || leaveRoom.equals("y")) {
+            if (leaveRoom.equalsIgnoreCase("yes") || leaveRoom.equalsIgnoreCase("y")) {
             String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|backwards|forward",
                     "Invalid direction chosen.");
             //checks to see if player has the item needed to enter room they are trying to
@@ -135,6 +137,7 @@ public class VerbParser {
         //prevents player from entering certain rooms if they don't already have access to it via required items
         // POSTER -->  COCKPIT -- | -- AIRCRAFT GUIDE --> GALLEY -- | -- CARGO KEY --> CARGO
         static boolean authorizePlayerToEnter(String directionChoice, Player player) throws IOException, ParseException {
+
             switch (directionChoice) {
                 //these require no keys or items to enter.
                 case "bathroom":
