@@ -12,12 +12,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
 public class Game {
-    private Player player = new Player();
+    private Player player;
     private Scanner scanner = new Scanner(System.in);
     private Prompter prompter = new Prompter(scanner);
     private String activeRoom = "commercial class";
@@ -46,7 +47,9 @@ public class Game {
     private void startGame() {
         Console.clear();
         // player is prompted with play game menu options
-        playGameOptions();
+        printMenu("gameOptions");
+        //playGameOptions();
+        player = new Player();
         String choice = prompter.prompt("Please enter your choice: ", "1|2|3|4", "Invalid choice: enter 1, 2, 3, or 4");
         if(Integer.parseInt(choice) == 2) {
             System.out.println("Hope you will come back again!");
@@ -58,6 +61,7 @@ public class Game {
                 Files.readAllLines(Path.of("resources/data/game_instructions.txt")).forEach(System.out::println);
                 String move = prompter.prompt("Enter to continue");
                 Console.clear();
+                startGame();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -119,15 +123,18 @@ public class Game {
                 statusBar();
                 System.out.println("You are currently in the " + activeRoom);
                 if (player.getInventory().contains(Item.AIRCRAFT_GUIDE)) {
-                    subMenu();
+                    printMenu("map");
                 }
                 else {
-                    menu();
+                    printMenu("turn");
                 }
                 String choice = prompter.prompt("What would you like to do? ");
                 if (timer.isTimeLeft()) {
                     if (choice.equals("save")){
                         saveGame();
+                    }
+                    else if(choice.toLowerCase().equals("options")){
+                        displayOptions();
                     }
                     else{
                         activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
@@ -147,6 +154,25 @@ public class Game {
             }
         }
     }
+
+    private void displayOptions() {
+        printMenu("options");
+        String choice = prompter.prompt("Type an option", "music|Music|quit|Quit", "Please enter a valid option");
+        switch(choice.toLowerCase()){
+            case "quit":
+                quitGame();
+            case "music":
+                System.out.println("Call Zach's music function here");
+        }
+
+    }
+
+    private void quitGame() {
+        player.setPlaying(false);
+        timer = null;
+        execute();
+    }
+
     /*
      * to save we need 1. Player name 2. Player inventory 3. Current activeRoom 4. Current time left in game.
      * Then write data to JSON file (resources/saves/{name}.json). Key for JSON will be players name(?)
@@ -169,35 +195,7 @@ public class Game {
         }
     }
 
-    // displays the actions a player can choose to do
-    public void menu() {
-        System.out.println("-- Menu Options --");
-        System.out.println(
-                "Your options are: \n" +
-                        "  Move\n" +
-                        "  Talk\n" +
-                        "  Items \n" +
-                        "  Inventory\n" +
-                        "  Save\n" +
-                        "  Sound\n"
-        );
-    }
 
-    // add sub-menu
-    // sub-menu will only show once the required item has been gathered
-    public void subMenu() {
-        System.out.println("-- Menu Options --");
-        System.out.println(
-                "Your options are: \n" +
-                        "  Move\n" +
-                        "  Talk\n" +
-                        "  Items \n" +
-                        "  Inventory\n" +
-                        "  Map\n " +
-                        "  Save\n" +
-                        "  Sound\n"
-        );
-    }
 
     // Displays a tab containing player name, current room & the time left
     public void statusBar() {
@@ -221,15 +219,35 @@ public class Game {
         }
     }
 
-    public void playGameOptions(){
-        System.out.println("-- Play Game Options --");
-        System.out.println(
-                        "  Enter 1: To play \n" +
-                        "  Enter 2: Leave the Game \n" +
-                        "  Enter 3: To Read the Instructions and then Play \n" +
-                        "  Enter 4: Load \n"
-        );
-    }
 
+    public void printMenu(String menu){
+        String[] optionsMenu = {"Music", "Quit"};
+        String[] turnMenu = {"Move", "Talk", "Items", "Inventory", "Save", "Options"};
+        String[] mapMenu = {"Move", "Talk", "Items", "Inventory", "Map", "Save", "Options"};
+        String[] playGameOptions = {"Enter 1: To play", "Enter 2: Leave the Game", "Enter 3: To Read the Instructions and then Play", "Enter 4: Load" };
+        String[] selectedArr = {};
+        System.out.println("Your options are:");
+        System.out.println("-----------------");
+        switch (menu){
+
+            case "options":
+                selectedArr = optionsMenu;
+                break;
+            case "turn":
+                selectedArr = turnMenu;
+                break;
+            case "map":
+               selectedArr = mapMenu;
+                break;
+            case "gameOptions":
+                selectedArr = playGameOptions;
+                break;
+        }
+        for (String word : selectedArr){
+            System.out.println("   " + word);
+        }
+
+
+    }
 }
 

@@ -87,6 +87,8 @@ public class VerbParser {
         String[] mapSynonyms = {"map", "view map", "check map", "Map"};
         String[] soundSynonyms = {"sound", "Sound", "Volume", "volume", "FX"};
 
+        choice = choice.toLowerCase(); //case insensitive
+
         for (String word : moveSynonyms) {
             if (word.equals(choice)) {
                 return "move";
@@ -152,6 +154,7 @@ public class VerbParser {
         //prevents player from entering certain rooms if they don't already have access to it via required items
         // POSTER -->  COCKPIT -- | -- AIRCRAFT GUIDE --> GALLEY -- | -- CARGO KEY --> CARGO
         static boolean authorizePlayerToEnter(String directionChoice, Player player) throws IOException, ParseException {
+
             switch (directionChoice) {
                 //these require no keys or items to enter.
                 case "bathroom":
@@ -200,8 +203,8 @@ public class VerbParser {
                         JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
                         System.out.println(endGameDialogue.get("end"));
                         player.setPlaying(false); //set isPlaying to "false" to break the game loop
-
-                        new Game().playAgain();
+                        GameTimeKeeper.timeKeeper = null;
+                        new Game().execute();
                         return;
                     }
                 }
