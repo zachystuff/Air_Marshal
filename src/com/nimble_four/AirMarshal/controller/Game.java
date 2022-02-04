@@ -61,6 +61,7 @@ public class Game {
                 Files.readAllLines(Path.of("resources/data/game_instructions.txt")).forEach(System.out::println);
                 String move = prompter.prompt("Enter to continue");
                 Console.clear();
+                startGame();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -216,6 +217,7 @@ public class Game {
         }
     }
 
+
     public void printMenu(String menu){
         String[] optionsMenu = {"Music", "Quit"};
         String[] turnMenu = {"Move", "Talk", "Items", "Inventory", "Save", "Options"};
@@ -242,6 +244,7 @@ public class Game {
         for (String word : selectedArr){
             System.out.println("   " + word);
         }
+
 
     }
 }

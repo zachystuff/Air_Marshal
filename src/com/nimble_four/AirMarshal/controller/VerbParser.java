@@ -118,11 +118,18 @@ public class VerbParser {
 
         static String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms, Player player) throws IOException, ParseException {
             JSONObject directions = (JSONObject) currentRoomData.get("directions");
-            displayDirections(directions);
+            formatter.displayDoubleTable(directions,"\u001B[36m", "Direction", "Room");
             String leaveRoom = prompter.prompt("Would you like to leave the room, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
-            if (leaveRoom.equalsIgnoreCase("yes") || leaveRoom.equalsIgnoreCase("y")) {
-            String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|backwards|forward",
-                    "Invalid direction chosen.");
+            if (leaveRoom.equals("yes") || leaveRoom.equals("y")) {
+            String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|back|forward",
+                    "Please enter a valid direction option.");
+                //check if its valid direction for the current room
+                if(directions.containsKey(directionChoice)) {
+                    System.out.println("Moving to the requested direction " + directionChoice);
+                } else {
+                    System.out.println("Invalid direction. Can not move " + directionChoice + " from this room.");
+                    return activeRoom;
+                }
             //checks to see if player has the item needed to enter room they are trying to
             if (authorizePlayerToEnter((String) directions.get(directionChoice), player)) {
                 //only change the active room if authorization to enter
@@ -165,35 +172,39 @@ public class VerbParser {
                     return false;
             }
         }
-
-        static void displayDirections(JSONObject directions){
-            String leftAlignFormat = "| %-15s | %-17s |%n";
-            System.out.format("\u001B[36m" + "*-----------------+-------------------*%n");
-            System.out.format("| Direction       | Room              |%n");
-            System.out.format("+-----------------+-------------------+%n");
-            directions.forEach((key,value) -> System.out.format(leftAlignFormat,key, value));
-            System.out.format("*-----------------+-------------------*%n" + "\u001B[0m");
-        }
     }
 
     private static class ConversationHandler {
         private static void talkToCharacters(JSONObject currentRoomData, Player player) throws IOException, ParseException {
-            System.out.println(currentRoomData.get("characters"));
+            formatter.displaySingleTable((JSONArray) currentRoomData.get("characters"),"\u001B[31m","CHARACTERS");
+            JSONArray characters = (JSONArray) currentRoomData.get("characters");
             JSONObject characterDialogueData = getCharacterDialogueData();
+            if(((JSONArray) currentRoomData.get("characters")).isEmpty()){
+                System.out.println("There are no characters in this room to talk to!");
+                return;
+            }
             String characterChoice = prompter.prompt("Who would you like to talk to?");
-            if (characterChoice.equals("stewardess")) {
-                //this is how game ends
-                if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)) {
-                    //NOTE: endgame dialogue can be edited in "resources/endgame.json"
-                    JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
-                    System.out.println(endGameDialogue.get("end"));
-                    player.setPlaying(false); //set isPlaying to "false" to break the game loop
-                    new Game().playAgain();
-                    return;
+            if (characters.contains(characterChoice)) {
+                System.out.println("Valid character for the room");
+                if (characterChoice.equals("stewardess")) {
+                    //this is how game ends
+                    if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)) {
+                        //NOTE: endgame dialogue can be edited in "resources/endgame.json"
+                        JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
+                        System.out.println(endGameDialogue.get("end"));
+                        player.setPlaying(false); //set isPlaying to "false" to break the game loop
+                        GameTimeKeeper.timeKeeper = null;
+                        new Game().execute();
+                        return;
+                    }
                 }
+            } else {
+                System.out.println("Not a valid name or character is in another room");
+                return;
             }
             JSONObject characterDialogue = (JSONObject) characterDialogueData; //this might be redundant
             System.out.println(characterDialogue.get(characterChoice));
+            String command = prompter.prompt("Enter to exit");
         }
 
         private static JSONObject getCharacterDialogueData() throws IOException, ParseException {
@@ -208,8 +219,8 @@ public class VerbParser {
             JSONArray itemsArray = (JSONArray) currentRoomData.get("items"); // converts the JSON to a JSONARRAY
                 // If the room has items ie all the items in the room haven't yet been Picked up
                 if (itemsArray.size() != 0) {
-//                System.out.println(currentRoomData.get("items"));
-                    displayItems(itemsArray);
+                    // method that generates a list of the items into a more readable format
+                    formatter.displaySingleTable(itemsArray,"\u001B[32m","ITEMS");
                     String addItem = prompter.prompt("Would you like to add any items to your inventory, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
                     if (addItem.equals("yes") || addItem.equals("y")) {
                         String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
@@ -237,18 +248,6 @@ public class VerbParser {
                     System.out.println("No items left, You've picked up all the items in the room");
                 }
             String command = prompter.prompt("Enter to exit");
-        }
-
-        // method that generates a list of the items into a more readable format
-        private static void displayItems(JSONArray itemsArray){
-            String leftAlignFormat = "| %-30s |%n";
-            System.out.format("\u001B[32m" + "*--------------------------------*%n");
-            System.out.format("| ITEMS                          |%n");
-            System.out.format("+--------------------------------+%n");
-            for (Object item: itemsArray) {
-                System.out.format(leftAlignFormat, item);
-            }
-            System.out.format("*--------------------------------*%n" + "\u001B[0m");
         }
     }
 
@@ -307,6 +306,32 @@ public class VerbParser {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+//  outputs data in a more readeable and designed format
+    private static class formatter{
+         static void displaySingleTable(JSONArray data, String color, String title){
+            int count = 15 - title.length();
+            String leftAlignFormat = "| %-30s |%n";
+            System.out.format(color + "*--------------------------------*%n");
+            System.out.format("| "  + title + " ".repeat(count)+ "                |%n");
+            System.out.format("+--------------------------------+%n");
+            for (Object item: data) {
+                System.out.format(leftAlignFormat, item);
+            }
+            System.out.format("*--------------------------------*%n" + "\u001B[0m");
+        }
+
+        static void displayDoubleTable(JSONObject data, String color, String title1, String title2){
+             int count1 = 15 - title1.length();
+             int count2 = 17 - title2.length();
+            String leftAlignFormat = "| %-15s | %-17s |%n";
+            System.out.format(color + "*-----------------+-------------------*%n");
+            System.out.format("| " + title1 + " ".repeat(count1) + " | " + title2 + " ".repeat(count2) +  " |%n");
+            System.out.format("+-----------------+-------------------+%n");
+            data.forEach((key,value) -> System.out.format(leftAlignFormat,key, value));
+            System.out.format("*-----------------+-------------------*%n" + "\u001B[0m");
         }
     }
 }

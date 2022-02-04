@@ -14,7 +14,7 @@
       ],
       "directions": {
         "forward": "first class",
-        "backwards": "bathroom",
+        "back": "bathroom",
         "down": "galley"
       }
     },
@@ -29,7 +29,7 @@
       ],
       "directions": {
         "forward": "cockpit",
-        "backwards": "commercial class"
+        "back": "commercial class"
       }
     },
     "cockpit": {
@@ -42,7 +42,7 @@
         "aircraft guide"
       ],
       "directions": {
-        "backwards": "first class"
+        "back": "first class"
       }
     },
     "bathroom": {
@@ -76,7 +76,7 @@
         "poison"
       ],
       "directions": {
-        "backwards": "galley"
+        "back": "galley"
       }
     }
   }
