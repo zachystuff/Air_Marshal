@@ -17,7 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
 public class Game {
-    private Player player = new Player();
+    private Player player;
     private Scanner scanner = new Scanner(System.in);
     private Prompter prompter = new Prompter(scanner);
     private String activeRoom = "commercial class";
@@ -47,6 +47,7 @@ public class Game {
         Console.clear();
         // player is prompted with play game menu options
         playGameOptions();
+        player = new Player();
         String choice = prompter.prompt("Please enter your choice: ", "1|2|3|4", "Invalid choice: enter 1, 2, 3, or 4");
         if(Integer.parseInt(choice) == 2) {
             System.out.println("Hope you will come back again!");
@@ -129,6 +130,9 @@ public class Game {
                     if (choice.equals("save")){
                         saveGame();
                     }
+                    else if(choice.equals("quit")){
+                        quitGame();
+                    }
                     else{
                         activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
                     }
@@ -147,6 +151,13 @@ public class Game {
             }
         }
     }
+
+    private void quitGame() {
+        player.setPlaying(false);
+        timer = null;
+        execute();
+    }
+
     /*
      * to save we need 1. Player name 2. Player inventory 3. Current activeRoom 4. Current time left in game.
      * Then write data to JSON file (resources/saves/{name}.json). Key for JSON will be players name(?)
@@ -178,7 +189,8 @@ public class Game {
                         "  Talk\n" +
                         "  Items \n" +
                         "  Inventory\n" +
-                        "  Save"
+                        "  Save\n" +
+                        "  Quit"
         );
     }
 
@@ -193,7 +205,8 @@ public class Game {
                         "  Items \n" +
                         "  Inventory\n" +
                         "  Map\n " +
-                        "  Save"
+                        "  Save\n" +
+                        "  Quit"
         );
     }
 
