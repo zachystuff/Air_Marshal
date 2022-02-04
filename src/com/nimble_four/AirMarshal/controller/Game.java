@@ -48,6 +48,11 @@ public class Game {
     private void startGame() {
         Console.clear();
         // player is prompted with play game menu options
+        try {
+            Files.readAllLines(Path.of("resources/data/game_banner.txt")).forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         printMenu("gameOptions");
         //playGameOptions();
         player = new Player();

@@ -14,14 +14,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 public class GameTimeKeeper extends Timer {
     private Timer timer = new Timer();
-    private String currentTime = "3:20";
+    private String currentTime = "5:00";
     static GameTimeKeeper timeKeeper = null;
     private boolean timeLeft = true;
 
     // ---- CONSTRUCTORS ----
     private GameTimeKeeper(Player player, Scanner scanner){
         timer.scheduleAtFixedRate(new TimerTask() {
-            int i = Integer.parseInt("200");
+            int i = Integer.parseInt("300");
             int displayMinutes;
             int displaySeconds;
             DecimalFormat formatter = new DecimalFormat("00");
