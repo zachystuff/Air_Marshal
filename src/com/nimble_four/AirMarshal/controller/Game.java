@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
@@ -130,8 +131,8 @@ public class Game {
                     if (choice.equals("save")){
                         saveGame();
                     }
-                    else if(choice.equals("quit")){
-                        quitGame();
+                    else if(choice.toLowerCase().equals("options")){
+                        displayOptions();
                     }
                     else{
                         activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
@@ -150,6 +151,22 @@ public class Game {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void displayOptions() {
+        System.out.println(
+                "Your options are: \n" +
+                        "  Music\n" +
+                        "  Quit\n"
+        );
+        String choice = prompter.prompt("Type an option");
+        switch(choice.toLowerCase()){
+            case "quit":
+                quitGame();
+            case "music":
+                System.out.println("Call Zach's music function here");
+        }
+
     }
 
     private void quitGame() {
@@ -190,7 +207,7 @@ public class Game {
                         "  Items \n" +
                         "  Inventory\n" +
                         "  Save\n" +
-                        "  Quit"
+                        "  Options"
         );
     }
 
@@ -206,7 +223,7 @@ public class Game {
                         "  Inventory\n" +
                         "  Map\n " +
                         "  Save\n" +
-                        "  Quit"
+                        "  Options"
         );
     }
 
