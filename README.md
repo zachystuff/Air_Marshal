@@ -51,12 +51,13 @@ display the basic actions as shown below:
 User is able to enter any of the above keywords to interact with the game such as 
 items which displays a list of the available items in the room
 ![readme](RMImages/items.png) <br />
-Once an item is picked up, it is added to your inventory and you can view it by typing "inventory"
+Once an item is picked up, it is added to your inventory and user can view it by typing "inventory"
 ![readme](RMImages/inventory.png) <br />
+User is able to enter different rooms and talk to the characters in the game. The clock is always ticking down during the game and once you run out of time, IT'S GAME OVER!
+![readme](RMImages/gameOver.png) <br />
 
 ### Optimization
-In order to reduce on the amount of code complexity we decided as a time to load
-data from JSON files into our game, this also saves us on the lines of code to write
+In order to reduce on the amount of code complexity we decided as a team to load data directly from .JSON files into our game, this also saves us on the lines of code to write making the game more customizable.
 
 
 
