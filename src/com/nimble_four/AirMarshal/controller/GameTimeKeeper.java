@@ -1,6 +1,7 @@
 package com.nimble_four.AirMarshal.controller;
 import com.apps.util.Console;
 import com.nimble_four.AirMarshal.Player;
+import com.nimble_four.AirMarshal.music.MusicPlayer;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -12,6 +13,8 @@ import java.text.DecimalFormat;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
+
+
 public class GameTimeKeeper extends Timer {
     private Timer timer = new Timer();
     private String currentTime = "5:00";
@@ -103,6 +106,7 @@ public class GameTimeKeeper extends Timer {
         System.out.println("\nAir Marshal " + player.getName() + gameOverDialogue.get("game over"));
         player.setPlaying(false);
         timeKeeper = null;
+        MusicPlayer.controller(1);
         new Game().playAgain();
     }
 }

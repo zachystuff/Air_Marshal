@@ -179,6 +179,7 @@ public class Game {
     private void quitGame() {
         player.setPlaying(false);
         MusicPlayer.controller(1); //this stops the music
+        GameTimeKeeper.timeKeeper = null;
         timer = null;
         execute();
     }

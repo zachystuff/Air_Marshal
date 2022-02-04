@@ -210,6 +210,7 @@ public class VerbParser {
                         prompter.prompt("Enter to continue");
                         player.setPlaying(false); //set isPlaying to "false" to break the game loop
                         GameTimeKeeper.timeKeeper = null;
+                        MusicPlayer.controller(1);
                         new Game().execute();
                         return;
                     }
