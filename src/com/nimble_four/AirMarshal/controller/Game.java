@@ -155,14 +155,14 @@ public class Game {
         }
     }
 
-    private void displayOptions() {
+    private void displayOptions() throws IOException, ParseException {
         printMenu("options");
-        String choice = prompter.prompt("Type an option", "music|Music|quit|Quit", "Please enter a valid option");
+        String choice = prompter.prompt("Type an option", "sound|Sound|quit|Quit", "Please enter a valid option");
         switch(choice.toLowerCase()){
             case "quit":
                 quitGame();
-            case "music":
-                System.out.println("Call Zach's music function here");
+            case "sound":
+                verbParser.parseVerb("sound", activeRoom, player);
         }
 
     }
@@ -221,7 +221,7 @@ public class Game {
 
 
     public void printMenu(String menu){
-        String[] optionsMenu = {"Music", "Quit"};
+        String[] optionsMenu = {"Sound", "Quit"};
         String[] turnMenu = {"Move", "Talk", "Items", "Inventory", "Save", "Options"};
         String[] mapMenu = {"Move", "Talk", "Items", "Inventory", "Map", "Save", "Options"};
         String[] playGameOptions = {"Enter 1: To play", "Enter 2: Leave the Game", "Enter 3: To Read the Instructions and then Play", "Enter 4: Load" };
