@@ -32,6 +32,7 @@ public class Game {
 
     private void gameIntro() {
         // Reads game intro and instructions from data/json files at the beginning of the game
+        Console.clear();
         try {
             Files.readAllLines(Path.of("resources/data/game_banner.txt")).forEach(System.out::println);
             Thread.sleep(2000);
@@ -50,7 +51,8 @@ public class Game {
         printMenu("gameOptions");
         //playGameOptions();
         player = new Player();
-        String choice = prompter.prompt("Please enter your choice: ", "1|2|3|4", "Invalid choice: enter 1, 2, 3, or 4");
+        String choice = prompter.prompt("Please enter your choice: \n-> ", "1|2|3|4", "Invalid choice: enter 1, 2, 3, or 4");
+        Console.clear();
         if(Integer.parseInt(choice) == 2) {
             System.out.println("Hope you will come back again!");
             System.exit(0);
@@ -67,11 +69,11 @@ public class Game {
             }
         }
         if(Integer.parseInt(choice) == 4){
-            player.setName(prompter.prompt("What is your name? "));
+            player.setName(prompter.prompt("What is your name?\n-> "));
             loadGame(player.getName());
         }
         else if(Integer.parseInt(choice) == 1){
-            player.setName(prompter.prompt("What is your name? "));
+            player.setName(prompter.prompt("What is your name?\n-> "));
             System.out.println("Enjoy the game Air Marshal " + player.getName());
             timer = GameTimeKeeper.getInstance(player, scanner);
             MusicPlayer.init();
@@ -128,12 +130,9 @@ public class Game {
                 else {
                     printMenu("turn");
                 }
-                String choice = prompter.prompt("What would you like to do? ");
+                String choice = prompter.prompt("What would you like to do?\n-> ");
                 if (timer.isTimeLeft()) {
-                    if (choice.equals("save")){
-                        saveGame();
-                    }
-                    else if(choice.toLowerCase().equals("options")){
+                    if(choice.toLowerCase().equals("options")){
                         displayOptions();
                     }
                     else{
@@ -157,18 +156,24 @@ public class Game {
 
     private void displayOptions() throws IOException, ParseException {
         printMenu("options");
-        String choice = prompter.prompt("Type an option", "sound|Sound|quit|Quit", "Please enter a valid option");
+        String choice = prompter.prompt("Type an option\n-> ", "sound|Sound|quit|Quit|Save|save", "Please enter a valid option");
         switch(choice.toLowerCase()){
             case "quit":
                 quitGame();
+                break;
             case "sound":
                 verbParser.parseVerb("sound", activeRoom, player);
+                break;
+            case "save":
+                saveGame();
+                break;
         }
 
     }
 
     private void quitGame() {
         player.setPlaying(false);
+        MusicPlayer.controller(1); //this stops the music
         timer = null;
         execute();
     }
@@ -210,8 +215,9 @@ public class Game {
     }
 
     public void playAgain() {
-        String response = prompter.prompt("Do you want to play again? yes or no? ", "yes|no|y|n", "Invalid Choice");
+        String response = prompter.prompt("Do you want to play again? yes or no?\n-> ", "yes|no|y|n", "Invalid Choice");
         if (response.equals("yes")|| response.equals("y")) {
+            MusicPlayer.controller(1);
             startGame();
         } else if (response.equals("no")|| response.equals("n")) {
             System.out.println("Thank you for playing! Hope you will play again!");
@@ -221,13 +227,13 @@ public class Game {
 
 
     public void printMenu(String menu){
-        String[] optionsMenu = {"Sound", "Quit"};
-        String[] turnMenu = {"Move", "Talk", "Items", "Inventory", "Save", "Options"};
-        String[] mapMenu = {"Move", "Talk", "Items", "Inventory", "Map", "Save", "Options"};
+        String[] optionsMenu = {"Save","Sound","Quit"};
+        String[] turnMenu = {"Move", "Talk", "Items", "Inventory", "Options"};
+        String[] mapMenu = {"Move", "Talk", "Items", "Inventory", "Map", "Options"};
         String[] playGameOptions = {"Enter 1: To play", "Enter 2: Leave the Game", "Enter 3: To Read the Instructions and then Play", "Enter 4: Load" };
         String[] selectedArr = {};
-        System.out.println("Your options are:");
-        System.out.println("-----------------");
+        System.out.println("\nYour options are:");
+        System.out.println("\n-----------------\n");
         switch (menu){
 
             case "options":
@@ -246,6 +252,7 @@ public class Game {
         for (String word : selectedArr){
             System.out.println("   " + word);
         }
+        System.out.println("\n-----------------\n");
 
 
     }
