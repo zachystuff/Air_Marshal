@@ -45,15 +45,13 @@ criminal is.
 At the start of the game, a user can decide to right away play the game, or they can select
 Game option 3 which is to view the instructions for details on how to play the game.
 ![readme](RMImages/instructionsImg.png)
-Once the user selects Game option 1, user starts in the commercial class, in order to perform an action, user is provided with a menu that 
-display the basic actions as shown below:
+Once the user selects Game option 1, user starts in the commercial class, in order to perform an action, user is provided with a menu that display the basic actions as shown below: <br />
 ![readme](RMImages/menuI.png) <br />
-User is able to enter any of the above keywords to interact with the game such as 
-items which displays a list of the available items in the room
+User is able to enter any of the above keywords to interact with the game such as items which displays a list of the available items in the room <br />
 ![readme](RMImages/items.png) <br />
 Once an item is picked up, it is added to your inventory and user can view it by typing "inventory"
 ![readme](RMImages/inventory.png) <br />
-User is able to enter different rooms and talk to the characters in the game. The clock is always ticking down during the game and once you run out of time, IT'S GAME OVER!
+User is able to enter different rooms and talk to the characters in the game. The clock is always ticking down during the game and once you run out of time, IT'S GAME OVER! <br />
 ![readme](RMImages/gameOver.png) <br />
 
 ### Optimization
