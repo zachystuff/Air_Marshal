@@ -190,8 +190,8 @@ public class VerbParser {
                         JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
                         System.out.println(endGameDialogue.get("end"));
                         player.setPlaying(false); //set isPlaying to "false" to break the game loop
-
-                        new Game().playAgain();
+                        GameTimeKeeper.timeKeeper = null;
+                        new Game().execute();
                         return;
                     }
                 }
