@@ -74,7 +74,7 @@ public class Game {
             player.setName(prompter.prompt("What is your name? "));
             System.out.println("Enjoy the game Air Marshal " + player.getName());
             timer = GameTimeKeeper.getInstance(player, scanner);
-            MusicPlayer.controller();
+            MusicPlayer.init();
             turnLoop();
         }
     }
@@ -106,7 +106,7 @@ public class Game {
             int sum = min + hour;
             //kick off game with saved data
             timer = GameTimeKeeper.getInstance(player, scanner, sum);
-            MusicPlayer.controller();
+            MusicPlayer.init();
             turnLoop();
         } catch(Exception e){
             System.out.println("ERROR: Could not locate your save file");
@@ -194,6 +194,8 @@ public class Game {
             System.out.println(e.getLocalizedMessage());
         }
     }
+
+
 
     // Displays a tab containing player name, current room & the time left
     public void statusBar() {

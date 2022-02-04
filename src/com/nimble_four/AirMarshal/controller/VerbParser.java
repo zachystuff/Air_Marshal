@@ -4,6 +4,7 @@ import com.apps.util.Console;
 import com.apps.util.Prompter;
 import com.nimble_four.AirMarshal.Item;
 import com.nimble_four.AirMarshal.Player;
+import com.nimble_four.AirMarshal.music.MusicPlayer;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -49,6 +50,9 @@ public class VerbParser {
             case "map":
                 MapHandler.handleMap(activeRoom);
                 break;
+            case "sound":
+                SoundHandler.handleSound();
+                break;
             default:
                 System.out.println("Enter a valid verb");
                 break;
@@ -81,6 +85,7 @@ public class VerbParser {
         String[] itemSynonyms = {"get", "items", "item", "take", "look", "find", "pick up"};
         String[] inventorySynonyms = {"inventory", "check inventory", "view inventory", "Inventory"};
         String[] mapSynonyms = {"map", "view map", "check map", "Map"};
+        String[] soundSynonyms = {"sound", "Sound", "Volume", "volume", "FX"};
 
         choice = choice.toLowerCase(); //case insensitive
 
@@ -107,6 +112,11 @@ public class VerbParser {
         for (String word : mapSynonyms) {
             if (word.equals(choice)) {
                 return "map";
+            }
+        }
+        for (String word : soundSynonyms) {
+            if (word.equals(choice)) {
+                return "sound";
             }
         }
         return "NONE";
@@ -332,6 +342,26 @@ public class VerbParser {
             System.out.format("+-----------------+-------------------+%n");
             data.forEach((key,value) -> System.out.format(leftAlignFormat,key, value));
             System.out.format("*-----------------+-------------------*%n" + "\u001B[0m");
+        }
+    }
+
+    private static class SoundHandler {
+        private static void handleSound() {
+            try{
+                System.out.println("\n1.pause");
+                System.out.println("2.resume\n");
+                String choice = prompter.prompt("==> ");
+                int choice_num = Integer.parseInt(choice);
+                if (choice_num > 0 & choice_num < 3) {
+                    MusicPlayer.controller(choice_num);
+                } else {
+                    System.out.println("Enter 1 or 2");
+                    SoundHandler.handleSound();
+                }
+            } catch (Exception e) {
+                System.out.println("Enter the numeric value");
+                SoundHandler.handleSound();
+            }
         }
     }
 }
