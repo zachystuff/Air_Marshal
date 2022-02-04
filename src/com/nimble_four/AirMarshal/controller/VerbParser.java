@@ -27,6 +27,7 @@ public class VerbParser {
     //every choice the player makes passes through here. Then delegates the task to function calls.
     //Functions calls should be abstracted out to a class to handle specific verb
     public String parseVerb(String choice, String activeRoom, Player player) throws IOException, ParseException {
+
         JSONObject allRooms = getRoomData();  //read in from resources/room_data.json
         JSONObject currentRoomData = (JSONObject) allRooms.get(activeRoom);
 
@@ -53,31 +54,27 @@ public class VerbParser {
                 break;
         }
         return activeRoom;
+
     }
 
     //reads in data for use in game
-    private JSONObject getRoomData() throws IOException, ParseException {
-
+    //public to test
+    public JSONObject getRoomData() throws IOException, ParseException {
         if (roomData == null) {
             roomData = new JSONParser().parse(new FileReader("resources/room_data.json"));
-            System.out.println("ROOMDATA INSTIANTED");
         }
 
         //NOTE: "resources/room_data.json" can be edited to change in game items, characters, etc.
-
         JSONObject room = (JSONObject) roomData;
         JSONObject rooms = (JSONObject) room.get("rooms");
         return rooms;
     }
 
-    private JSONObject getCharacterDialogueData() throws IOException, ParseException {
-        JSONObject characterDialogueData = (JSONObject) new JSONParser().parse(new FileReader("resources/character_dialogue.json"));
-        return characterDialogueData;
-    }
+
 
     //funnels player input into 1 of 6 possibilities: move, talk, items, inventory, map, or "invalid entry"
-
-    private String findChoiceSynonyms(String choice) {
+    //Made public for testing
+    public String findChoiceSynonyms(String choice) {
         //allows multiple verbs inputted by the user to trigger 'synonym' of in-game action
         String[] moveSynonyms = {"move", "walk", "run", "change room", "move room"};
         String[] talkSynonyms = {"talk", "speak", "converse", "chat", "interact"};
@@ -118,10 +115,19 @@ public class VerbParser {
     private static class CharacterMover {
 
         static String movePlayer(String activeRoom, JSONObject currentRoomData, JSONObject allRooms, Player player) throws IOException, ParseException {
-            System.out.println(currentRoomData.get("directions"));
-            String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|backwards|forward",
-                    "Invalid direction chosen.");
             JSONObject directions = (JSONObject) currentRoomData.get("directions");
+            formatter.displayDoubleTable(directions,"\u001B[36m", "Direction", "Room");
+            String leaveRoom = prompter.prompt("Would you like to leave the room, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
+            if (leaveRoom.equals("yes") || leaveRoom.equals("y")) {
+            String directionChoice = prompter.prompt("Which direction would you like to go?", "up|down|back|forward",
+                    "Please enter a valid direction option.");
+                //check if its valid direction for the current room
+                if(directions.containsKey(directionChoice)) {
+                    System.out.println("Moving to the requested direction " + directionChoice);
+                } else {
+                    System.out.println("Invalid direction. Can not move " + directionChoice + " from this room.");
+                    return activeRoom;
+                }
             //checks to see if player has the item needed to enter room they are trying to
             if (authorizePlayerToEnter((String) directions.get(directionChoice), player)) {
                 //only change the active room if authorization to enter
@@ -129,7 +135,7 @@ public class VerbParser {
                 System.out.println(allRooms.get(activeRoom));
                 return activeRoom;
             }
-            ;
+        }
             return activeRoom;
         }
 
@@ -167,22 +173,35 @@ public class VerbParser {
 
     private static class ConversationHandler {
         private static void talkToCharacters(JSONObject currentRoomData, Player player) throws IOException, ParseException {
-            System.out.println(currentRoomData.get("characters"));
+            formatter.displaySingleTable((JSONArray) currentRoomData.get("characters"),"\u001B[31m","CHARACTERS");
+            JSONArray characters = (JSONArray) currentRoomData.get("characters");
             JSONObject characterDialogueData = getCharacterDialogueData();
-            String characterChoice = prompter.prompt("Who would you like to talk to?");
-            if (characterChoice.equals("stewardess")) {
-                //this is how game ends
-                if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)) {
-                    //NOTE: endgame dialogue can be edited in "resources/endgame.json"
-                    JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
-                    System.out.println(endGameDialogue.get("end"));
-                    player.setPlaying(false); //set isPlaying to "false" to break the game loop
-                    new Game().playAgain();
-                    return;
-                }
+            if(((JSONArray) currentRoomData.get("characters")).isEmpty()){
+                System.out.println("There are no characters in this room to talk to!");
+                return;
             }
-            JSONObject characterDialogue = (JSONObject) characterDialogueData;
+            String characterChoice = prompter.prompt("Who would you like to talk to?");
+            if (characters.contains(characterChoice)) {
+                System.out.println("Valid character for the room");
+                if (characterChoice.equals("stewardess")) {
+                    //this is how game ends
+                    if (player.getInventory().contains(Item.POISON) & player.getInventory().contains(Item.BOARDING_PASS)) {
+                        //NOTE: endgame dialogue can be edited in "resources/endgame.json"
+                        JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
+                        System.out.println(endGameDialogue.get("end"));
+                        player.setPlaying(false); //set isPlaying to "false" to break the game loop
+
+                        new Game().playAgain();
+                        return;
+                    }
+                }
+            } else {
+                System.out.println("Not a valid name or character is in another room");
+                return;
+            }
+            JSONObject characterDialogue = (JSONObject) characterDialogueData; //this might be redundant
             System.out.println(characterDialogue.get(characterChoice));
+            String command = prompter.prompt("Enter to exit");
         }
 
         private static JSONObject getCharacterDialogueData() throws IOException, ParseException {
@@ -195,47 +214,37 @@ public class VerbParser {
     private static class ItemHandler {
         private static void handleItems(JSONObject currentRoomData, Player player) {
             JSONArray itemsArray = (JSONArray) currentRoomData.get("items"); // converts the JSON to a JSONARRAY
-            // If the room has items ie all the items in the room haven't yet been Picked up
-            if (itemsArray.size() != 0) {
-//                System.out.println(currentRoomData.get("items"));
-                displayItems(itemsArray);
-                String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
-                String item = itemSelected.replace(" ", "_");
-                // Checks if the item entered by user is valid ie is in that specific room
-                boolean isValidItem = itemsArray.stream().anyMatch(it -> it.equals(itemSelected.toLowerCase()));
+                // If the room has items ie all the items in the room haven't yet been Picked up
+                if (itemsArray.size() != 0) {
+                    // method that generates a list of the items into a more readable format
+                    formatter.displaySingleTable(itemsArray,"\u001B[32m","ITEMS");
+                    String addItem = prompter.prompt("Would you like to add any items to your inventory, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
+                    if (addItem.equals("yes") || addItem.equals("y")) {
+                        String itemSelected = prompter.prompt("Which item would you like to get?").toUpperCase();
+                        String item = itemSelected.replace(" ", "_");
+                        // Checks if the item entered by user is valid ie is in that specific room
+                        boolean isValidItem = itemsArray.stream().anyMatch(it -> it.equals(itemSelected.toLowerCase()));
 
-                if (isValidItem) {
-                    // checks if item is already in our inventory
-                    if (player.getInventory().contains(Item.valueOf(item))) {
-                        System.out.println("Item was already added to inventory, Try selecting a different item");
-                    } else {
-                        // Once an item is picked up, it is removed from the room
-                        Object itemz = (Object) itemSelected.toLowerCase();
-                        itemsArray.remove(itemz);
-                        // Added to players inventory
-                        player.addToInventory(Item.valueOf(item));
-                        System.out.println("Item successfully added");
-                        System.out.println("You currently have: \r" + player.getInventory());
+                        if (isValidItem) {
+                            // checks if item is already in our inventory
+                            if (player.getInventory().contains(Item.valueOf(item))) {
+                                System.out.println("Item was already added to inventory, Try selecting a different item");
+                            } else {
+                                // Once an item is picked up, it is removed from the room
+                                Object itemz = (Object) itemSelected.toLowerCase();
+                                itemsArray.remove(itemz);
+                                // Added to players inventory
+                                player.addToInventory(Item.valueOf(item));
+                                System.out.println("Item successfully added");
+                            }
+                        } else {
+                            System.out.println("You entered an Invalid item");
+                        }
                     }
                 } else {
-                    System.out.println("You entered an Invalid item");
+                    System.out.println("No items left, You've picked up all the items in the room");
                 }
-            } else {
-                System.out.println("No items left, You've picked up all the items in the room");
-            }
-
-        }
-
-        // method that generates a list of the items into a more readable format
-        private static void displayItems(JSONArray itemsArray){
-            String leftAlignFormat = "| %-30s |%n";
-            System.out.format("\u001B[32m" + "*--------------------------------*%n");
-            System.out.format("| ITEMS                          |%n");
-            System.out.format("+--------------------------------+%n");
-            for (Object item: itemsArray) {
-                System.out.format(leftAlignFormat, item);
-            }
-            System.out.format("*--------------------------------*%n" + "\u001B[0m");
+            String command = prompter.prompt("Enter to exit");
         }
     }
 
@@ -246,12 +255,13 @@ public class VerbParser {
                 System.out.println("You don't have any items in your inventory");
             } else {
                 player.displayInventory();
-                String dropItem = prompter.prompt("Would you like to drop any items in your inventory, yes or no?");
+                String dropItem = prompter.prompt("Would you like to drop any items in your inventory, yes or no?", "yes|y|no|n","Invalid entry, please enter yes or no");
                 if (dropItem.equals("yes") || dropItem.equals("y")) {
                     String itemSelected = prompter.prompt("Which of the above items would you like to drop from your inventory?");
                     System.out.println(deletedFromInventory(currentRoomData, player, itemSelected));
                 }
             }
+            String command = prompter.prompt("Enter to exit");
         }
 
         //            MAKING SURE USER INPUT IS A VALID ENUM
@@ -261,7 +271,7 @@ public class VerbParser {
             if (itemExistOnAirCraft) {
                 String item = itemSelected.replace(" ", "_").toUpperCase();
                 String isDeleted = player.dropItem(Item.valueOf(item)) ? itemSelected
-                        + " has been successfully deleted" : itemSelected + " doesn't exist in your inventory";
+                        + " has been successfully removed" : itemSelected + " doesn't exist in your inventory";
 
                 JSONArray itemsArray = (JSONArray) currentRoomData.get("items"); // converts the JSON to a JSONARRAY
                 // Once an item is picked up, it is removed from the room
@@ -289,9 +299,36 @@ public class VerbParser {
         private static void handleMap (String activeRoom) {
             try {
                 Files.readAllLines(Path.of("resources/maps/" + activeRoom +".txt")).forEach(System.out::println);
+                String command = prompter.prompt("Enter to exit");
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+//  outputs data in a more readeable and designed format
+    private static class formatter{
+         static void displaySingleTable(JSONArray data, String color, String title){
+            int count = 15 - title.length();
+            String leftAlignFormat = "| %-30s |%n";
+            System.out.format(color + "*--------------------------------*%n");
+            System.out.format("| "  + title + " ".repeat(count)+ "                |%n");
+            System.out.format("+--------------------------------+%n");
+            for (Object item: data) {
+                System.out.format(leftAlignFormat, item);
+            }
+            System.out.format("*--------------------------------*%n" + "\u001B[0m");
+        }
+
+        static void displayDoubleTable(JSONObject data, String color, String title1, String title2){
+             int count1 = 15 - title1.length();
+             int count2 = 17 - title2.length();
+            String leftAlignFormat = "| %-15s | %-17s |%n";
+            System.out.format(color + "*-----------------+-------------------*%n");
+            System.out.format("| " + title1 + " ".repeat(count1) + " | " + title2 + " ".repeat(count2) +  " |%n");
+            System.out.format("+-----------------+-------------------+%n");
+            data.forEach((key,value) -> System.out.format(leftAlignFormat,key, value));
+            System.out.format("*-----------------+-------------------*%n" + "\u001B[0m");
         }
     }
 }

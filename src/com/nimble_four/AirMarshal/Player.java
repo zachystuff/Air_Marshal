@@ -57,4 +57,8 @@ public class Player {
 
         System.out.format("*--------------------------------*%n" + "\u001B[0m");
     }
+
+    public void setInventory(List<Item> inventory) {
+        this.inventory = inventory;
+    }
 }

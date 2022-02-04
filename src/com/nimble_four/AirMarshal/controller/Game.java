@@ -5,13 +5,14 @@ import com.nimble_four.AirMarshal.Item;
 import com.nimble_four.AirMarshal.Player;
 import com.nimble_four.AirMarshal.music.MusicPlayer;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
@@ -23,7 +24,6 @@ public class Game {
     private VerbParser verbParser = new VerbParser();
     private GameTimeKeeper timer;
 
-
     public void execute() {
         gameIntro();
         startGame();
@@ -32,24 +32,83 @@ public class Game {
     private void gameIntro() {
         // Reads game intro and instructions from data/json files at the beginning of the game
         try {
+            Files.readAllLines(Path.of("resources/data/game_banner.txt")).forEach(System.out::println);
+            Thread.sleep(2000);
+            Console.clear();
             Files.readAllLines(Path.of("resources/data/game_intro.txt")).forEach(System.out::println);
-            Files.readAllLines(Path.of("resources/data/game_instructions.txt")).forEach(System.out::println);
-        } catch (IOException e) {
+            Thread.sleep(5000);
+            String move = prompter.prompt("Enter to continue");
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     private void startGame() {
-        player.setName(prompter.prompt("What is your name? "));
-        String test = prompter.prompt("Please enter yes if you want to play? ", "yes|y", "Invalid choice: enter yes to play");
-        // player is prompted, typing "yes" or "y" allows them to enter the game
-        if (test.equals("yes") || test.equals("y")) {
+        Console.clear();
+        // player is prompted with play game menu options
+        playGameOptions();
+        String choice = prompter.prompt("Please enter your choice: ", "1|2|3|4", "Invalid choice: enter 1, 2, 3, or 4");
+        if(Integer.parseInt(choice) == 2) {
+            System.out.println("Hope you will come back again!");
+            System.exit(0);
+        }
+        if (Integer.parseInt(choice) == 3) {
+            // Reads game instructions from data/json if player chooses to from the play game menu
+            try {
+                Files.readAllLines(Path.of("resources/data/game_instructions.txt")).forEach(System.out::println);
+                String move = prompter.prompt("Enter to continue");
+                Console.clear();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(Integer.parseInt(choice) == 4){
+            player.setName(prompter.prompt("What is your name? "));
+            loadGame(player.getName());
+        }
+        else if(Integer.parseInt(choice) == 1){
+            player.setName(prompter.prompt("What is your name? "));
             System.out.println("Enjoy the game Air Marshal " + player.getName());
-            timer = new GameTimeKeeper(player, scanner);
+            timer = GameTimeKeeper.getInstance(player, scanner);
             MusicPlayer.controller();
             turnLoop();
         }
     }
+
+    private void loadGame(String name) {
+        try{
+            System.out.println("Loading game for " + name);
+            JSONObject loadedFile = (JSONObject) new JSONParser().parse(new FileReader("resources/saves/"+name+".json")); //the entire data file
+            JSONObject loadedData = (JSONObject) loadedFile.get(name); // this is the user's specific data
+            //Load room
+            String loadedRoom = (String) loadedData.get("activeRoom");
+            activeRoom = loadedRoom;
+            //set players inventory
+            String itemString = (String) loadedData.get("inventory");
+            String[] arr = itemString.split(", |\\[|\\]|,");
+            List<Item> inventory = new ArrayList<>();
+            for (String s : arr){
+                for (Item i : Item.values()){
+                    if(i.getName().equals(s)){
+                        inventory.add(i);
+                    }
+                }
+            }
+            player.setInventory(inventory);
+            //Get time and parse it
+            String timeleft = (String) loadedData.get("timeleft");
+            int hour = Integer.parseInt(timeleft.substring(0,1)) * 60;
+            int min = Integer.parseInt(timeleft.substring(2,4));
+            int sum = min + hour;
+            //kick off game with saved data
+            timer = GameTimeKeeper.getInstance(player, scanner, sum);
+            MusicPlayer.controller();
+            turnLoop();
+        } catch(Exception e){
+            System.out.println("ERROR: Could not locate your save file");
+            startGame();
+        }
+ }
 
     private void turnLoop() {
         while (player.isPlaying()) {
@@ -69,7 +128,6 @@ public class Game {
                 if (timer.isTimeLeft()) {
                     if (choice.equals("save")){
                         saveGame();
-                        player.setPlaying(false);
                     }
                     else{
                         activeRoom = verbParser.parseVerb(choice, activeRoom, player); //this handles moving, talking, and taking items
@@ -91,25 +149,21 @@ public class Game {
     }
     /*
      * to save we need 1. Player name 2. Player inventory 3. Current activeRoom 4. Current time left in game.
-     * Then write data to JSON file (resources/saves/games.json). Key for JSON will be players name(?)
+     * Then write data to JSON file (resources/saves/{name}.json). Key for JSON will be players name(?)
      */
     private void saveGame() {
-        System.out.println("SAVE THE GAME NOW!");
-        System.out.println("PLAYERS NAME: " + player.getName()); //1
-        System.out.println("PLAYER INVENTORY:" + player.getInventory()); //2
-        System.out.println("ACTIVE ROOM:" + activeRoom); //3
-        System.out.println("CURRENT TIME LEFT" + timer.getCurrentTime()); //4
-        HashMap<String,Object> data = new HashMap<>();
-        data.put("inventory", player.getInventory());
+        JSONObject data = new JSONObject();
+        data.put("inventory", player.getInventory().toString());
         data.put("activeRoom", activeRoom);
         data.put("timeleft", timer.getCurrentTime());
         JSONObject newSaveData = new JSONObject();
         newSaveData.put(player.getName(), data);
         try{
-            FileWriter file = new FileWriter("resources/saves/games.json");
+            FileWriter file = new FileWriter("resources/saves/"+player.getName()+".json");
             file.write(newSaveData.toJSONString());
             file.close();
             System.out.println("File Saved!");
+            String move = prompter.prompt("Enter to continue");
         }catch (IOException e){
             System.out.println(e.getLocalizedMessage());
         }
@@ -138,7 +192,8 @@ public class Game {
                         "  Talk\n" +
                         "  Items \n" +
                         "  Inventory\n" +
-                        "  Map\n "
+                        "  Map\n " +
+                        "  Save"
         );
     }
 
@@ -162,6 +217,16 @@ public class Game {
             System.out.println("Thank you for playing! Hope you will play again!");
             System.exit(0);
         }
+    }
+
+    public void playGameOptions(){
+        System.out.println("-- Play Game Options --");
+        System.out.println(
+                        "  Enter 1: To play \n" +
+                        "  Enter 2: Leave the Game \n" +
+                        "  Enter 3: To Read the Instructions and then Play \n" +
+                        "  Enter 4: Load \n"
+        );
     }
 
 }
