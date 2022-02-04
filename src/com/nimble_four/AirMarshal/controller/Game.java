@@ -70,7 +70,7 @@ public class Game {
             player.setName(prompter.prompt("What is your name? "));
             System.out.println("Enjoy the game Air Marshal " + player.getName());
             timer = GameTimeKeeper.getInstance(player, scanner);
-            MusicPlayer.controller();
+            MusicPlayer.init();
             turnLoop();
         }
     }
@@ -102,7 +102,7 @@ public class Game {
             int sum = min + hour;
             //kick off game with saved data
             timer = GameTimeKeeper.getInstance(player, scanner, sum);
-            MusicPlayer.controller();
+            MusicPlayer.init();
             turnLoop();
         } catch(Exception e){
             System.out.println("ERROR: Could not locate your save file");
@@ -178,7 +178,8 @@ public class Game {
                         "  Talk\n" +
                         "  Items \n" +
                         "  Inventory\n" +
-                        "  Save"
+                        "  Save\n" +
+                        "  Sound\n"
         );
     }
 
@@ -193,7 +194,8 @@ public class Game {
                         "  Items \n" +
                         "  Inventory\n" +
                         "  Map\n " +
-                        "  Save"
+                        "  Save\n" +
+                        "  Sound\n"
         );
     }
 
