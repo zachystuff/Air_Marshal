@@ -208,6 +208,13 @@ public class VerbParser {
                         JSONObject endGameDialogue = (JSONObject) new JSONParser().parse(new FileReader("resources/endgame.json"));
                         System.out.println(endGameDialogue.get("end"));
                         prompter.prompt("Enter to continue");
+                        try {
+                            Files.readAllLines(Path.of("resources/data/game_ending.txt")).forEach(System.out::println);
+                            String command = prompter.prompt("Enter to exit");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        prompter.prompt("Enter to continue");
                         player.setPlaying(false); //set isPlaying to "false" to break the game loop
                         GameTimeKeeper.timeKeeper = null;
                         MusicPlayer.controller(1);
