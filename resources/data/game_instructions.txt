@@ -12,13 +12,13 @@ and gather items.
 
 To play the game you will be prompted with what do you what to do. Your options are:
 
-1. Move - this will allow you to move across different sections of the plane. Once you enter move as your option.
-          You are provided with the directions you have available to move to. Enter your selection to move to another room.
-2. Talk - as you visit each section this will allow you to interact with the passengers and crew. You are provided
+1. Move - this option will allow you to move across different sections of the plane. Once you enter move as your option.
+          You are provided with the directions you have available to move to. Enter the direction to move to another room.
+2. Talk - as you visit each section this option will allow you to interact with the passengers and crew. You are provided
           the people you can interact with. Enter the person you want to talk to and see what they have to say.
-3. Items - this will allow you to see the items that are in the room and the player will be prompted
-           to select which item to collect
-4. Inventory - this will display the items the player has collected
-5. Help - "under development"
+3. Items - this option will allow you to see the items that are in the room and the player will be prompted
+           to select which item to collect. Enter the item name you wish to collect.
+4. Inventory - this option will display the items the player has collected. You also have the option to drop items.
+5. Options - this option allows you to
 
 To win the game you, as the Air Marshal, have to guess who the criminal is.
